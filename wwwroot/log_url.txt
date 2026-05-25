@@ -1,1 +1,1 @@
-
+http://api.pay5000.com/api?token=你的账号token&code=pcdd&rows=1&format=json&t=1779711362
