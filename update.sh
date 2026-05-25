@@ -9,7 +9,7 @@
 # ========================================
 
 PROJECT_DIR="/var/www/yunwei001"
-BRANCH="production"
+BRANCH="main"
 
 cd $PROJECT_DIR
 
