@@ -43,10 +43,9 @@ $(function(){
                 callback:function(data){
                         if (data.status == 'y') {
                                 layer.msg(data.info, {icon: 6});
-                                Vform.resetForm();//初始化表单
-                                setTimeout(function(){//2秒后刷新
-                                        location.reload();
-                                }, 2000);
+                                setTimeout(function(){//立即跳回上一页
+                                        history.back();
+                                }, 300);
                         } else {
                                 layer.msg(data.info, {icon: 5});
                                 Vform.resetForm();//初始化表单
