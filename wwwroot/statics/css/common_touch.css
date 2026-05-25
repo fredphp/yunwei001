@@ -338,6 +338,25 @@ iframe {
 	border-radius: initial;
 }
 
+
+/* lottery_top and lottery_next moved above header */
+.main > .lottery_top {
+	position: relative;
+	overflow: hidden;
+	border-bottom: solid 1px #eaeaea;
+	height: 86px;
+	background-color: #fff;
+}
+.main > .lottery_next {
+	width: auto;
+	position: relative;
+	float: none;
+	background-color: #f7f7f7;
+	color: #000;
+	padding: 5px 10px;
+	height: 24px;
+	font-size: 15px;
+}
 .lottery_box .lottery_top {
 	position: relative;
 	overflow: hidden;
