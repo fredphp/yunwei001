@@ -75,7 +75,7 @@ $cfgarr = array(
                 'id' => array(1, 7, 12),//入库字段ID，入库多个ID数组
                 'template' => array('fantan', 'cqssc', 'liubo'),//操作模板
                // 'url' => HOST.'/api?token='.TOKEN.'&code=cqssc&rows=1&format=json',//采集URL
-                'url' => OPNEJIANG_HOST.'/test?token='.OPNEJIANG_TOKEN.'&code=cqssc&rows=5&format=json',
+                'url' => OPNEJIANG_HOST.'/api?token='.OPNEJIANG_TOKEN.'&code=cqssc&rows=5&format=json',
         ),
         'gdkl' => array(
                 'name' => '广东快乐10分',
@@ -86,7 +86,7 @@ $cfgarr = array(
                 'id' => array(2, 8),//入库字段ID，入库多个ID数组
                 'template' => array('fantan'),//操作模板
                 //'url' => HOST.'/api?token='.TOKEN.'&code=gdklsf&rows=1&format=json',//采集URL
-                'url' => OPNEJIANG_HOST.'/test?token='.OPNEJIANG_TOKEN.'&code=jisuklsf&rows=5&format=json',
+                'url' => OPNEJIANG_HOST.'/api?token='.OPNEJIANG_TOKEN.'&code=jisuklsf&rows=5&format=json',
         ),
         'xync' => array(//幸运农场 重庆快乐十分，10分钟一期,时间为全天
                 'name' => '幸运农场',
@@ -128,7 +128,7 @@ $cfgarr = array(
                 'id' => array(6, 11),//入库字段ID，入库多个ID数组
                 'template' => array('pk10', 'pkpj'),//操作模板
  //               'url' => HOST.'/api?token='.TOKEN.'&code=bjpk10&rows=1&format=json',//采集URL
-                'url' => OPNEJIANG_HOST.'/test?token='.OPNEJIANG_TOKEN.'&code=bjpk10&rows=5&format=json',
+                'url' => OPNEJIANG_HOST.'/api?token='.OPNEJIANG_TOKEN.'&code=bjpk10&rows=5&format=json',
         ),
         'teqdd' => array(//极速28 自开奖 每天从早上00：00至23:59：59每2分钟 30秒一期
                 'name' => '极速28',
