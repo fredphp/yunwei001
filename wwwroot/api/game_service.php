@@ -9,7 +9,7 @@
 define('HOST', "http://api.pay5000.com");//
 define('TOKEN', "你的账号token");        //
 define('OPNEJIANG_HOST',"https://api.openjiang.com");//
-define('OPNEJIANG_TOKEN',"7F77CF62CD5A18AC");//
+define('OPNEJIANG_TOKEN',"DC52C44C19227731");//
 ///////////////////////////////////////////
 /**
  *  ┏┻━━━━━┻┓
