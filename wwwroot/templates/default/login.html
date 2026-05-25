@@ -84,6 +84,16 @@ $(function(){
                 }
         });
         placeholder('.login_box');//表单提示IE兼容
+        //验证码加载失败自动重试(503等间歇性错误)
+        $('#code_img').on('error', function(){
+                var img = this;
+                img._retry = (img._retry || 0) + 1;
+                if(img._retry <= 3){
+                        setTimeout(function(){
+                                img.src = img.src.split('&rand=')[0] + '&rand=' + Math.random();
+                        }, 1000 * img._retry);
+                }
+        });
         //自动调整窗口
         $(window).resize(function() {
                 var h = $(window).height();
