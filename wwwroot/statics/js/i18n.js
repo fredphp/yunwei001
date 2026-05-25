@@ -871,7 +871,7 @@ var I18N_PACKS = {
  * @returns {string} Translated wanfa text
  */
 function translateWanfa(wanfaText) {
-    if (!wanfaText) return wanfaText;
+    if (!wanfaText) return "";
     
     // Chinese to i18n key mapping
     var wanfaMap = {
