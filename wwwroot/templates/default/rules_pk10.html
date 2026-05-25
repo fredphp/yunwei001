@@ -1,0 +1,58 @@
+<?php include template("header"); ?>
+<div class="main">
+	<div class="header">
+		<a class="back" href="javascript:history.back(-1)" title="<?php echo L('rules_back')?>"><i class="iconfont icon-fanhui"></i></a>
+		<a class="home" href="?a=init" title="<?php echo L('rules_home')?>"><i class="iconfont icon-home"></i></a>
+		<h4><?php echo $headername?></h4>
+	</div>
+	<div class="scroll_box">
+		<div class="rules">
+			<div class="title"><?php echo L('rules_pk10_title')?></div>
+			<div class="msg">
+				<h5><?php echo L('rules_declaration_title')?></h5>
+				<p><?php echo L('rules_declaration_1')?></p>
+				<p><?php echo L('rules_declaration_2')?></p>
+				<p><?php echo L('rules_declaration_3')?></p>
+				<p><?php echo L('rules_declaration_4')?></p>
+				<p><?php echo L('rules_declaration_5')?></p>
+				<p><?php echo L('rules_declaration_6')?></p>
+				<p><?php echo L('rules_declaration_7')?></p>
+				<p><?php echo L('rules_declaration_8')?></p>
+				<p><?php echo L('rules_declaration_9')?></p>
+				<h5><?php echo L('rules_pk10_subtitle')?></h5>
+				<p><?php echo L('rules_pk10_desc')?></p>
+				<p><?php echo L('rules_pk10_rules_intro')?></p>
+				<p><span><?php echo L('rules_pk10_rule_1')?></span></p>
+				<div>
+					<p><span><?php echo L('rules_pk10_rule_odd_even')?></span><?php echo L('rules_pk10_rule_odd_even_desc')?></p>
+					<p><span><?php echo L('rules_pk10_rule_big_small')?></span><?php echo L('rules_pk10_rule_big_small_desc')?></p>
+					<p><span><?php echo L('rules_pk10_rule_designated')?></span><?php echo L('rules_pk10_rule_designated_desc')?></p>
+				</div>
+				<p><span><?php echo L('rules_pk10_rule_dragon_tiger')?></span></p>
+				<div>
+					<p><span><?php echo L('rules_pk10_dt_1st')?></span><?php echo L('rules_pk10_dt_1st_desc')?></p>
+					<p><span><?php echo L('rules_pk10_dt_2nd')?></span><?php echo L('rules_pk10_dt_2nd_desc')?></p>
+					<p><span><?php echo L('rules_pk10_dt_3rd')?></span><?php echo L('rules_pk10_dt_3rd_desc')?></p>
+					<p><span><?php echo L('rules_pk10_dt_4th')?></span><?php echo L('rules_pk10_dt_4th_desc')?></p>
+					<p><span><?php echo L('rules_pk10_dt_5th')?></span><?php echo L('rules_pk10_dt_5th_desc')?></p>
+				</div>
+				<p><span><?php echo L('rules_pk10_sum_title')?></span></p>
+				<div>
+					<p><span><?php echo L('rules_pk10_sum_odd_even')?></span><?php echo L('rules_pk10_sum_odd_even_desc')?></p>
+					<p><span><?php echo L('rules_pk10_sum_big_small')?></span><?php echo L('rules_pk10_sum_big_small_desc')?></p>
+					<p><span><?php echo L('rules_pk10_sum_designated')?></span><?php echo L('rules_pk10_sum_designated_desc')?></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(function(){
+	//自动调整窗口
+	$(window).resize(function() {
+		var h = $(window).height();
+		$('.scroll_box').css({'height':h-49});
+	}).resize();
+});
+</script>
+<?php include template("footer"); ?>

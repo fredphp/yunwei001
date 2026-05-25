@@ -1,0 +1,80 @@
+<?php include template("header"); ?>
+<style>
+.kefu-fallback {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 60vh;
+	padding: 40px 20px;
+	text-align: center;
+}
+.kefu-fallback-icon {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	background: #fff1f0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 20px;
+	font-size: 40px;
+	color: #ff4d4f;
+}
+.kefu-fallback-icon i {
+	font-size: 40px;
+}
+.kefu-fallback-text {
+	font-size: 16px;
+	color: #666;
+	margin-bottom: 20px;
+	line-height: 1.6;
+}
+.kefu-fallback-btn {
+	display: inline-block;
+	padding: 10px 40px;
+	background: #e74c3c;
+	color: #fff;
+	border-radius: 4px;
+	font-size: 16px;
+	text-decoration: none;
+}
+.kefu-fallback-btn:hover {
+	background: #c0392b;
+}
+</style>
+<div class="main">
+	<div class="header">
+		<a class="back" href="javascript:history.back(-1)" title="<?php echo L('return')?>"><i class="iconfont icon-fanhui"></i></a>
+		<a class="home" href="?a=init" title="<?php echo L('home')?>"><i class="iconfont icon-home"></i></a>
+		<h4><?php echo $headername?></h4>
+	</div>
+	<div class="scroll_box">
+		<?php if ($kefu_available && $kefu_url) { ?>
+		<iframe name="kefu_iframe" id="kefu_iframe" src="<?php echo $kefu_url?>" frameborder="false" scrolling="auto" width="100%" height="100%" allowtransparency="true"></iframe>
+		<script type="text/javascript">
+		$(function(){
+			var h = $(window).height();
+			$('.scroll_box, #kefu_iframe').css({'height':h-49});
+			var w = $('.scroll_box').width();
+			$('#kefu_iframe').css({'width':w});
+			$(window).resize(function() {
+				var h = $(window).height();
+				$('.scroll_box, #kefu_iframe').css({'height':h-49});
+				var w = $('.scroll_box').width();
+				$('#kefu_iframe').css({'width':w});
+			});
+		});
+		</script>
+		<?php } else { ?>
+		<div class="kefu-fallback">
+			<div class="kefu-fallback-icon">
+				<i class="iconfont icon-kefu"></i>
+			</div>
+			<div class="kefu-fallback-text"><?php echo L('kefu_offline_tip')?></div>
+			<a class="kefu-fallback-btn" href="?a=init"><?php echo L('return')?> <?php echo L('home')?></a>
+		</div>
+		<?php } ?>
+	</div>
+</div>
+<?php include template("footer"); ?>

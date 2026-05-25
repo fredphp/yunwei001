@@ -1,0 +1,20 @@
+<?php
+/**
+ *  ┏┻━━━━━┻┓
+ *  ┃　　　　　　  ┃
+ *  ┃ ┳┛　  ┗┳ ┃
+ *  ┃　　　┻　　  ┃
+ *  ┗━┓　┏━━━┛
+ *      ┃　┃神兽 保佑
+ *      ┃　┃代码无BUG
+ *      ┃　┗━━━━━━━━━┓
+ *      ┃  资源驿站 zy13.net   ┣┓
+ *      ┃　　 QQ:97887526　  ┏┛
+ *      ┗━┓  ┏━━━┓  ┏┛
+ *          ┗━┛      ┗━┛
+ */ 
+define('MYFILE_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
+include MYFILE_PATH . '/source/base.php';
+base :: creat_app();
+
+?>

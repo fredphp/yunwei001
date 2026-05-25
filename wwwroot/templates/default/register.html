@@ -1,0 +1,118 @@
+<?php include template("header"); ?>
+<div class="main">
+        <div class="header">
+                <a class="back" href="javascript:history.back(-1)" title="返回"><i class="iconfont icon-fanhui"></i></a>
+                <a class="home" href="?a=init" title="首页"><i class="iconfont icon-home"></i></a>
+                <h4><?php echo $headername?></h4>
+        </div>
+        <div class="scroll_box">
+                <div class="reg_box">
+                        <form action="?a=register" method="post" id="reg_form" onsubmit="return false;">
+                                <input type="hidden" name="dosubmit" id="dosubmit" value="yes" />
+                                <div class="form_div">
+                                        <ul>
+                                                <li>
+                                                        <input class="inputxt name" type="text" id="username" name="username" value="" placeholder="<?php echo L('username')?>" />
+                                                </li>
+                                                <li>
+                                                        <input class="inputxt name" type="text" id="name" name="name" value="" placeholder="<?php echo L('real_name_tip')?>" />
+                                                </li>
+                                                <li>
+                                                        <input class="inputxt pwd" type="password" id="password" name="password" value="" placeholder="<?php echo L('set_password_tip')?>" />
+                                                        <b class="tp-btn btn-off"></b>
+                                                </li>
+                                                <li class="password_two">
+                                                        <input class="inputxt pwd" type="password" id="confirmpassword" name="confirmpassword" value="" placeholder="<?php echo L('confirm_password')?>" />
+                                                        <b class="tp-btn btn-off"></b>
+                                                </li>
+                                                <li>
+                                                        <input class="inputxt name" type="text" id="agent" name="agent" value="" placeholder="<?php echo L('agent_invite_code')?>" />
+                                                </li>
+                                                <li>
+                                                        <input class="inputxt yzm" type="text" id="code" name="code" value="" placeholder="<?php echo L('captcha')?>" />
+                                                        <span class="code"><?php echo form::checkcode('code_img', '4', '14', 84, 34, '' , '', '#FFFFFF', true)?></span>
+                                                </li>
+                                        </ul>
+                                </div>
+                                <div class="submit">
+                                        <input type="submit" id="submit" name="submit" value="<?php echo L('register_now')?>"/>
+                                        <a class="login" href="?a=login"><?php echo L('has_account_login')?></a>
+                                </div>
+                        </form>
+                </div>
+        </div>
+</div>
+<script type="text/javascript" src="<?php echo JS_PATH?>Validform_v5.3.2.js"></script>
+<script type="text/javascript">
+$(function(){
+        var Vform = $("#reg_form").Validform();
+        Vform.config({
+                tiptype:1,
+                ajaxPost:true,
+                callback:function(data){
+                        if (data.status == 'y') {
+                                Vform.resetForm();//初始化表单
+                                setTimeout(function(){//2秒后跳转到登录页
+                                        location.href = '?a=login';
+                                }, 2000);
+                        }
+                }
+        });
+        Vform.addRule([
+                {
+                        ele:'#username',
+                        datatype:USERNAME_TYPE,
+                        ajaxurl:INDEX_PATH+'a=ajax_username',
+                        nullmsg:'<?php echo L('enter_username')?>',
+                        errormsg:'<?php echo L('username_format_error')?>'
+                },
+                {
+                        ele:'#name',
+                        datatype:'s2-5',
+                        nullmsg:'<?php echo L('enter_realname')?>',
+                        errormsg:'<?php echo L('realname_length')?>'
+                },
+                {
+                        ele:'#password',
+                        datatype:'s6-20',
+                        nullmsg:'<?php echo L('enter_password')?>',
+                        errormsg:'<?php echo L('password_length_limit')?>'
+                },
+                {
+                        ele:'#confirmpassword',
+                        datatype:'s6-20',
+                        recheck:"password",
+                        nullmsg:'<?php echo L('confirm_your_password')?>',
+                        errormsg:'<?php echo L('password_mismatch')?>'
+                },
+                {
+                        ele:'#agent',
+                        datatype:'*1-20',
+                        nullmsg:'<?php echo L('enter_invite_code')?>',
+                        errormsg:'<?php echo L('invite_code_length')?>'
+                },
+                {
+                        ele:'#code',
+                        datatype:'s4-4',
+                        nullmsg:'<?php echo L('enter_captcha')?>',
+                        errormsg:'<?php echo L('captcha_4_digits')?>'
+                }
+        ]);
+        $('.btn-off').on('click',function() {
+                if ($(this).hasClass('btn-on')) {
+                        $(this).removeClass('btn-on');
+                        $(this).prev()[0].type = 'password';
+                } else {
+                        $(this).addClass('btn-on');
+                        $(this).prev()[0].type = 'text';
+                }
+        });
+        placeholder('.reg_box');//表单提示IE兼容
+        //自动调整窗口
+        $(window).resize(function() {
+                var h = $(window).height();
+                $('.scroll_box').css({'height':h-49});
+        }).resize();
+});
+</script>
+<?php include template("footer"); ?>

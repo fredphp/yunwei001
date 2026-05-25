@@ -1,0 +1,58 @@
+<?php include template("header"); ?>
+<div class="main">
+        <div class="header">
+                <a class="back" href="javascript:history.back(-1)" title="返回"><i class="iconfont icon-fanhui"></i></a>
+                <a class="home" href="?a=init" title="首页"><i class="iconfont icon-home"></i></a>
+                <h4><?php echo $headername?></h4>
+        </div>
+        <div class="scroll_box">
+                <div class="app_box">
+                        <!--h4>建议下载安装APP浏览本站，享受最优质的服务</h4-->
+                        <h4><?php echo L('app_maintenance')?></h4>
+                        <div class="signup">
+                                <div class="form">
+                                        <!--div class="logo"></div-->
+                                        <div class="link">
+                                                <!--div class="btn down">
+                                                        <a class="android" href="app/fc_mobile.apk"><?php echo L('android_version')?></a>
+                                                        <a class="ios" href="https://xmvip.vip/OC93T4"><?php echo L('iphone_version')?></a>
+                                                </div-->
+                                                <div class="btn pc">
+                                                        <a href="?a=init"><?php echo L('continue_browsing')?></a>
+                                                </div>
+                                                <div class="m"></div>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+        </div>
+</div>
+<script type="text/javascript">
+$(function(){
+        //自动调整窗口
+        $(window).resize(function() {
+                var h = $(window).height();
+                $('.scroll_box').css({'height':h-49});
+        }).resize();
+        var appurl = '<?php echo $this -> setting["weburl"]?>?a=app';
+        var u = navigator.userAgent;
+        var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+        var isSafari = /Safari/.test(u) && !/Chrome/.test(u); // Safari
+        var isWX = u.indexOf('MicroMessenger') > -1; //是否微信
+        var isQQ = u.match(/\sQQ/i) == ' qq'; //是否QQ
+        if (isiOS && !isSafari) {//IOS
+                $('.link .btn.down').html(appurl);
+                $('.link .m').html('<?php echo L('ios_copy_safari_tip')?>').show();
+        } else if (isiOS && isSafari) {//IOS Safari
+                $('.link .btn a.android').hide();
+                $('.link .m').html('<?php echo L('ios_safari_download_tip')?>').show();
+        } else if (isWX || isQQ) {//微信 QQ
+                $('.link .m').html('<?php echo L('wx_qq_open_browser_tip')?>').show();
+        } else if (isAndroid) {//android
+                $('.link .btn a.ios').hide();
+                $('.link .m').html('<?php echo L('android_download_tip')?>').show();
+        }
+});
+</script>
+<?php include template("footer"); ?>

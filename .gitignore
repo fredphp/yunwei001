@@ -1,0 +1,32 @@
+# Runtime
+node_modules/
+.next/
+*.log
+caches/
+wwwroot/caches/
+
+# Sensitive configs (contain passwords)
+wwwroot/configs/database.php
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Backup files
+*.bak
+*.bak_*
+
+# Disabled files
+*.disabled
+
+# Uploads (user data - large files)
+wwwroot/uppic/*
+!wwwroot/uppic/.gitkeep
+
+# PHP runtime
+wwwroot/caches/*

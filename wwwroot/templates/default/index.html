@@ -1,0 +1,146 @@
+<?php include template("header"); ?>
+<script type="text/javascript" src="<?php echo JS_PATH?>touchslide.js"></script>
+<!-- 首页语言切换按钮 - 仅首页显示 -->
+<style>
+.lang-switch {
+        position: fixed;
+        top: 8px;
+        left: 8px;
+        z-index: 9999;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 32px;
+        padding: 0 12px 0 8px;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        -webkit-user-select: none;
+        transition: background-color 0.2s, box-shadow 0.2s;
+        background-color: rgba(0,0,0,0.25);
+        border: none;
+        outline: none;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.lang-switch:active {
+        background-color: rgba(0,0,0,0.45);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.lang-switch .gl-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        font-size: 16px;
+        line-height: 1;
+}
+.lang-switch .gl-label {
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        line-height: 1;
+        white-space: nowrap;
+}
+</style>
+<div class="lang-switch" onclick="switchLang()">
+        <span class="gl-icon">🌐</span>
+        <span class="gl-label" id="langLabel"><?php echo (defined('ROUTE_LANG') && ROUTE_LANG == 'my-mm') ? 'မြန်မာ' : '中文'; ?></span>
+</div>
+<script type="text/javascript">
+function switchLang() {
+        var currentLang = '<?php echo defined("ROUTE_LANG") ? ROUTE_LANG : "zh-cn"?>';
+        var newLang = (currentLang === 'my-mm') ? 'zh-cn' : 'my-mm';
+        document.cookie = 'user_lang=' + newLang + '; path=/; max-age=' + (365 * 24 * 3600);
+        window.location.reload();
+}
+</script>
+<div class="main">
+        <div class="header">
+                <a class="pic" href="?a=user" title="">
+                        <?php
+                        if ($user['pic']) {
+                                if(preg_match('/^\d*$/',$user['pic'])){
+                                        echo '<img class="pic" src="statics/images/pic/'.$user['pic'].'.jpg" alt="PIC" />';
+                                } else {
+                                        echo '<img class="pic" src="uppic/user/'.$user['pic'].'" alt="PIC" />';
+                                }
+                        }
+                        ?>
+                </a>
+        </div>
+        <div class="scroll_box">
+                <div id="slide" class="container-fluid slide">
+                        <ul class="bd">
+                                <li>
+                                        <a href="#"><img class="carousel-inner" src="uppic/banner/banner1.jpg"></a>
+                                </li>
+                                <li>
+                                        <a href="#"><img class="carousel-inner" src="uppic/banner/banner2.jpg"></a>
+                                </li>
+                                <li>
+                                        <a href="#"><img class="carousel-inner" src="uppic/banner/banner3.jpg"></a>
+                                </li>
+                                <li>
+                                        <a href="#"><img class="carousel-inner" src="uppic/banner/banner4.jpg"></a>
+                                </li>
+                        </ul>
+                        <ul class="hd"></ul>
+                </div>
+                <div class="m_ann">
+                        <i class="iconfont icon-gonggao"></i>
+                        <marquee scrollamount="3">
+                                <?php echo htmlspecialchars_decode(nl2br($this -> setting['ann']))?>
+                                <?php echo $agent_ann?>
+                        </marquee>
+                </div>
+                <div class="min_nav">
+                        <a href="?a=user" title="<?php echo L('funds')?>" class="money"><i class="iconfont icon-money"></i><?php echo $user ? $this -> setting['stamp'].$user['money'] : L('please_login')?></a>
+                        <a href="?a=pay" title="<?php echo L('deposit')?>" class="n1"><i class="iconfont icon-chongzhi"></i><?php echo L('deposit')?></a>
+                        <a href="?a=cash" title="<?php echo L('withdraw')?>" class="n2"><i class="iconfont icon-tikuan"></i><?php echo L('withdraw')?></a>
+                        <a href="?a=app" title="APP" class="n5"><i class="iconfont icon-app"></i>APP</a>
+                        <a href="?a=account" title="<?php echo L('transaction_record')?>" class="n3"><i class="iconfont icon-liushui"></i><?php echo L('transaction_record')?></a>
+                </div>
+                <div class="m_nva">
+                        <ul>
+                                <li>
+                                        <a class="nav_fantan" href="?a=fantan" title="<?php echo L('fantan_zone')?>"><?php echo L('fantan_zone')?><span>FanTan</span></a>
+                                </li>
+                                <!-- 导航部分 -->
+                                <?php echo $gameheadhtml?>
+                        </ul>
+                </div>
+        </div>
+        <div class="footer menu">
+                <a class="foot_btn a" href="?a=init"><i class="iconfont icon-dating"></i><?php echo L('game_hall')?></a>
+                <a class="foot_btn" href="?a=pay"><i class="iconfont icon-chongzhi"></i><?php echo L('deposit_funds')?></a>
+                <a class="foot_btn" href="?a=kefu"><i class="iconfont icon-kefu"></i><?php echo L('online_service')?></a>
+                <a class="foot_btn" href="?a=user"><i class="iconfont icon-user"></i><?php echo L('member_center')?></a>
+        </div>
+</div>
+<script type="text/javascript">
+        $(function(){
+                //自动调整窗口
+                $(window).resize(function() {
+                        var h = $(window).height();
+                        $('.scroll_box').css({'height':h-110});
+                }).resize();
+
+                setTimeout(function(){
+                        //启动幻灯片
+                        TouchSlide({
+                                slideCell: "#slide",
+                                mainCell: ".bd",
+                                titCell: ".hd",
+                                effect: "leftLoop",
+                                autoPage: true,
+                                autoPlay: true
+                        });
+                }, 300);
+        });
+</script>
+<?php include template("footer"); ?>

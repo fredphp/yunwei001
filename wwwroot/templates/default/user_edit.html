@@ -1,0 +1,131 @@
+<?php include template("header"); ?>
+<div class="main">
+        <div class="header">
+                <a class="back" href="?a=user" title="返回"><i class="iconfont icon-fanhui"></i></a>
+                <a class="home" href="?a=init" title="首页"><i class="iconfont icon-home"></i></a>
+                <h4><?php echo $headername?></h4>
+        </div>
+        <div class="scroll_box">
+                <div class="user_box">
+                        <form action="?a=user_edit" method="post" id="send_form" onsubmit="return false;">
+                                <input type="hidden" name="dosubmit" id="dosubmit" value="yes" />
+                                <input type="hidden" name="oldnickname" id="oldnickname" value="<?php echo $user['nickname']?>" />
+                                <div class="form_div">
+                                        <ul>
+                                                <li>
+                                                        <input class="inputxt" type="text" id="nickname" name="nickname" value="<?php echo $user['nickname']?>" placeholder="<?php echo L('set_nickname')?>" />
+                                                </li>
+                                                <li>
+                                                        <?php
+                                                        if ($user['name']) {
+                                                                echo '<span class="title">'.L('name').'：'.PassStart($user['name'], 1).'</span>';
+                                                        } else {
+                                                        ?>
+                                                        <input class="inputxt" type="text" id="name" name="name" value="<?php echo $user['name']?>" placeholder="<?php echo L('name_save_tip')?>" />
+                                                        <?php }?>
+                                                </li>
+                                                <li>
+                                                        <?php
+                                                        if ($user['qq']) {
+                                                                echo '<span class="title">QQ：'.$user['qq'].'</span>';
+                                                        } else {
+                                                        ?>
+                                                        <input class="inputxt" type="text" id="qq" name="qq" value="<?php echo $user['qq']?>" placeholder="<?php echo L('qq_save_tip')?>" />
+                                                        <?php }?>
+                                                </li>
+                                                <li>
+                                                        <?php
+                                                        if ($user['mobile']) {
+                                                                echo '<span class="title">'.L('mobile').'：'.PassStart($user['mobile'], 2, 2).'</span>';
+                                                        } else {
+                                                        ?>
+                                                        <input class="inputxt" type="text" id="mobile" name="mobile" value="<?php echo $user['mobile']?>" placeholder="<?php echo L('mobile_save_tip')?>" />
+                                                        <?php }?>
+                                                </li>
+                                                <li>
+                                                        <?php
+                                                        if ($user['bank']) {
+                                                                echo '<span class="title">'.L('bank_name').'：'.PassStart($user['bank'], 2, 2).'</span>';
+                                                        } else {
+                                                        ?>
+                                                        <input class="inputxt" type="text" id="bank" name="bank" value="<?php echo $user['bank']?>" placeholder="<?php echo L('bank_name_save_tip')?>" />
+                                                        <?php }?>
+                                                </li>
+                                                <li>
+                                                        <?php
+                                                        if ($user['card']) {
+                                                                echo '<span class="title">'.L('bank_account').'：'.PassStart($user['card'], 2, 2).'</span>';
+                                                        } else {
+                                                        ?>
+                                                        <input class="inputxt" type="text" id="card" name="card" value="<?php echo $user['card']?>" placeholder="<?php echo L('bank_account_save_tip')?>" />
+                                                        <?php }?>
+                                                </li>
+                                                <li>
+                                                        <?php
+                                                        if ($user['alipay']) {
+                                                                echo '<span class="title">'.L('alipay').'：'.PassStart($user['alipay'], 2, 2).'</span>';
+                                                        } else {
+                                                        ?>
+                                                        <input class="inputxt" type="text" id="alipay" name="alipay" value="<?php echo $user['alipay']?>" placeholder="<?php echo L('alipay_save_tip')?>" />
+                                                        <?php }?>
+                                                </li>
+                                        </ul>
+                                </div>
+                                <div class="submit"><input type="submit" id="submit" name="submit" value="<?php echo L('save')?>"></div>
+                        </form>
+                </div>
+                <div class="tps">
+                        <h4><?php echo L('tips')?>：</h4>
+                        <p>1、<?php echo L('realname_bank_match_tip')?></p>
+                        <p>2、<?php echo L('profile_save_no_modify_tip')?></p>
+                </div>
+        </div>
+</div>
+<script type="text/javascript" src="<?php echo JS_PATH?>Validform_v5.3.2.js"></script>
+<script type="text/javascript">
+$(function(){
+        var Vform = $("#send_form").Validform();
+        Vform.config({
+                tiptype:1,
+                ajaxPost:true,
+                callback:function(data){
+                        if(data.status == 'y'){
+                                setTimeout(function(){//2秒后刷新
+                                        location.href = '?a=user';
+                                }, 2000);
+                        }
+                }
+        });
+        Vform.addRule([
+                {
+                        ele:'#email',
+                        datatype:'e',
+                        ignore:'ignore',
+                        nullmsg:'<?php echo L('enter_email')?>',
+                        errormsg:'<?php echo L('enter_correct_email')?>'
+                },
+                {
+                        ele:'#mobile',
+                        datatype:'m',
+                        ignore:'ignore',
+                        nullmsg:'<?php echo L('enter_mobile')?>',
+                        errormsg:'<?php echo L('enter_correct_mobile')?>'
+                },
+                {
+                        ele:'#nickname',
+                        datatype:'*1-10',
+                        ajaxurl:INDEX_PATH+'a=ajax_nickname',
+                        ajaxget:'#oldnickname',
+                        ignore:'ignore',
+                        nullmsg:'<?php echo L('enter_nickname')?>',
+                        errormsg:'<?php echo L('nickname_length_limit')?>'
+                }
+        ]);
+        //自动调整窗口
+        $(window).resize(function() {
+                var h = $(window).height();
+                $('.scroll_box').css({'height':h-49});
+        }).resize();
+});
+</script>
+<?php include template("footer"); ?>

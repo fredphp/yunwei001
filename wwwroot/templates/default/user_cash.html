@@ -1,0 +1,86 @@
+<?php include template("header"); ?>
+<div class="main">
+        <div class="header">
+                <a class="back" href="?a=user" title="返回"><i class="iconfont icon-fanhui"></i></a>
+                <a class="home" href="?a=init" title="首页"><i class="iconfont icon-home"></i></a>
+                <h4><?php echo $headername?></h4>
+        </div>
+        <div class="scroll_box">
+                <div class="user_box">
+                        <form action="?a=cash" method="post" id="send_form" onsubmit="return false;">
+                                <input type="hidden" name="dosubmit" id="dosubmit" value="yes" />
+                                <div class="form_div">
+                                        <ul>
+                                                <li>
+                                                        <input class="inputxt" type="text" id="money" name="money" value="" placeholder="<?php echo L('max_withdraw')?><?php echo $user['money']?>" onchange="Gtnum('<?php echo $this -> setting['cash']?>');" />
+                                                </li>
+                                                <li>
+                                                        <span class="title"><?php echo L('per_transaction').'：'.(str_exists($this -> setting['cash'], '%') ? $this -> setting['cash'] : $this -> setting['stamp'].$this -> setting['cash'])?>，<?php echo L('service_fee')?><?php echo $this -> setting['stamp']?><em id="Gsnum">0</em>，<?php echo L('actual_receive')?><?php echo $this -> setting['stamp']?><em id="Gtnum">0</em></span>
+                                                </li>
+                                                <li>
+                                                        <span class="title"><?php echo L('name')?><?php echo PassStart($user['name'], 1)?></span>
+                                                </li>
+                                                <li>
+                                                        <span class="title"><?php echo L('withdraw_to_account')?></span>
+                                                </li>
+                                                <li>
+                                                        <label class="label"><span class="title"><input type="radio" name="account" value="1" checked="checked" /> <?php echo L('bank_card')?><?php echo $user['bank']?> <?php echo $user['card']?></span></label>
+                                                </li>
+                                                <li>
+                                                        <label class="label"><span class="title"><input type="radio" name="account" value="2" /> <?php echo L('alipay')?><?php echo PassStart($user['alipay'], 2, 2); ?></span></label>
+                                                </li>
+                                                <li>
+                                                        <input class="inputxt" type="text" id="comment" name="comment" value="" placeholder="<?php echo L('comment_for_agent')?>" />
+                                                </li>
+                                        </ul>
+                                </div>
+                                <div class="submit"><input type="submit" id="submit" name="submit" value="<?php echo L('submit')?>"></div>
+                        </form>
+                </div>
+                <div class="tps">
+                        <h4><?php echo L('tips')?>：</h4>
+                        <p>1、<?php echo L('max_withdraw_is')?><?php echo $this -> setting['stamp'].$this -> setting['maxcash']?></p>
+                        <p>2、<?php echo L('confirm_name_account')?></p>
+                        <p>3、<?php echo L('aware_service_fee')?></p>
+                </div>
+        </div>
+</div>
+<script type="text/javascript" src="<?php echo JS_PATH?>Validform_v5.3.2.js"></script>
+<script type="text/javascript">
+$(function(){
+        var Vform = $("#send_form").Validform();
+        Vform.config({
+                tiptype:1,
+                ajaxPost:true,
+                callback:function(data){
+                        if(data.status == 'y'){
+                                Vform.resetForm();//初始化表单
+                                setTimeout(function(){//2秒后刷新
+                                        location.href = '?a=cash_list';
+                                }, 2000);
+                        }
+                }
+        });
+        Vform.addRule([
+                {
+                        ele:'#money',
+                        datatype:'rmb2',
+                        nullmsg:'<?php echo L('enter_amount')?>',
+                        errormsg:'<?php echo L('enter_correct_currency')?>'
+                },
+                {
+                        ele:'#comment',
+                        datatype:'s1-50',
+                        ignore:'ignore',
+                        nullmsg:'<?php echo L('enter_comment')?>',
+                        errormsg:'<?php echo L('comment_max_50')?>'
+                },
+        ]);
+        //自动调整窗口
+        $(window).resize(function() {
+                var h = $(window).height();
+                $('.scroll_box').css({'height':h-49});
+        }).resize();
+});
+</script>
+<?php include template("footer"); ?>

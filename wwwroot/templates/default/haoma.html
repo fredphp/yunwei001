@@ -1,0 +1,156 @@
+<?php include template("header"); ?>
+<div class="main haoma">
+	<div class="header">
+		<a class="back" href="javascript:history.back(-1)" title="返回"><i class="iconfont icon-fanhui"></i></a>
+		<a class="home" href="?a=init" title="首页"><i class="iconfont icon-home"></i></a>
+		<h4><?php echo $headername?></h4>
+	</div>
+	<div class="scroll_box">
+		<div class="table">
+			<div class="hd">
+				<div class="sethaoma"><a href="javascript:;" class="a"><?php echo L('number')?></a><a href="javascript:;"><?php echo L('big_small')?></a><a href="javascript:;"><?php echo L('odd_even')?></a></div>
+				<div class="title">
+					<input type="hidden" id="win" value="<?php echo $win ?>" />
+					<?php echo form::date('daytime',$daytime, 0);?>
+					<button name="gosearch" id="gosearch" type="button">GO</button>
+					<a class="load" href="javascript:location.reload();"><?php echo L('refresh')?></a>
+				</div>
+				<a class="search" href="javascript:;" title="<?php echo L('search')?>"></a>
+			</div>
+			<div class="list">
+				<div class="onload"></div>
+			</div>
+		</div>
+		<div id="pages"><?php echo $pages?></div>
+	</div>
+</div>
+<script type="text/javascript">
+var gameid = '<?php echo $gameid?>';//游戏ID
+var haomadata = <?php echo $haomadata?>;//获取开奖数据
+$(function(){
+	var html = '';
+	$.each(haomadata,function(i,v){
+		var str = v.haoma;
+		if (str) {
+			var strs = new Array();
+			strs = str.split(',');
+			var haoma = '', haoma_type = '';
+			var he = 0;
+			var len = strs.length;
+			for (i = 0; i < len; i++) {
+				he = he + parseInt(strs[i]);
+				haoma += '<i class="'+(gameid == 4 || gameid == 5 || gameid == 9 || gameid == 10 || gameid == 13 || gameid == 14? 'orange' : (gameid == 6 ? 'c'+strs[i] : 'blue'))+'">'+strs[i]+'</i>';
+			}
+			if (gameid < 6 || gameid == 13 || gameid == 14) {//番摊
+				if (gameid == 1 || gameid == 14) {
+					he = parseInt(strs[3])*10  + parseInt(strs[4]);
+				} else if (gameid == 4 || gameid == 5 || gameid == 13) {
+					he = parseInt(strs[1])*10  + parseInt(strs[2]);
+				} else if (gameid == 2 || gameid == 3) {
+					he = parseInt(strs[6])*10  + parseInt(strs[7]);
+				}
+				var zhi = he % 4 == 0 ? 4 : he % 4;
+				haoma_type = '<li class="line"><span class="he">'+__('value')+' '+he+'</span><span class="zhi">'+zhi+' '+__('fan_unit')+'</span>'+(zhi % 2 == 0 ? '<span class="dsd">'+__('odd')+'</span>' : '<span class="dss">'+__('even')+'</span>')+'</li>';
+			} else if (gameid == 6) {//北京赛车
+				var gyh = 0;
+				var lh = '';
+				for (i = 0; i < len; i++) {
+					if (i < 2) gyh = gyh + parseInt(strs[i]);
+					if (i < 5) lh += parseInt(strs[i]) > parseInt(strs[len-1-i]) ? '<span class="lhl">'+__('dragon')+'</span>' : '<span class="lhh">'+__('tiger')+'</span>';
+				}
+				haoma_type = '<li class="line"><span class="he">'+__('champion_runner_up')+' '+gyh+'</span>'+(gyh > 11 ? '<span class="dxd">'+__('big')+'</span>' : '<span class="dxx">'+__('small')+'</span>')+(gyh % 2 == 0 ? '<span class="dsd">'+__('odd')+'</span>' : '<span class="dss">'+__('even')+'</span>')+lh+'</li>';
+			} else if (gameid == 7) {//时时彩
+				var lh = parseInt(strs[0]) > parseInt(strs[len-1]) ? '<span class="lhl">'+__('dragon')+'</span>' : (parseInt(strs[0]) == parseInt(strs[len-1]) ? '<span class="lhhe">'+__('tie')+'</span>' : '<span class="lhh">'+__('tiger')+'</span>');
+				haoma_type = '<li class="line"><span class="he">'+__('total_sum')+' '+he+'</span>'+(he > 22 ? '<span class="dxd">'+__('big')+'</span>' : '<span class="dxx">'+__('small')+'</span>')+(he % 2 == 0 ? '<span class="dsd">'+__('odd')+'</span>' : '<span class="dss">'+__('even')+'</span>')+lh+'</li>';
+			} else if (gameid == 9 || gameid == 10) {//28
+				haoma_type = '<li class="line"><span class="he">'+__('total_sum')+' '+he+'</span>'+(he > 13 ? '<span class="dxd">'+__('big')+'</span>' : '<span class="dxx">'+__('small')+'</span>')+(he % 2 == 0 ? '<span class="dsd">'+__('odd')+'</span>' : '<span class="dss">'+__('even')+'</span>')+'</li>';
+			} else if (gameid == 12) {//六博
+				he = parseInt(strs[0]+strs[1]);
+				if (he == 0 || he == 50 ) {
+					he = parseInt(strs[2]+strs[3]);
+				}
+				if (he > 50) {
+					he = he - 50;
+				}
+				haoma_type = '<li class="line"><span class="he">'+__('special_code')+' '+he+'</span>'+(he == 49 ? '<span class="lhhe">'+__('tie')+'</span>' : (he > 13 ? '<span class="dxd">'+__('big')+'</span>' : '<span class="dxx">'+__('small')+'</span>'))+(he == 49 ? '<span class="lhhe">'+__('tie')+'</span>' : (he % 2 == 0 ? '<span class="dsd">'+__('odd')+'</span>' : '<span class="dss">'+__('even')+'</span>'))+'</li>';
+			}
+		} else {
+			haoma = __('wait_lottery');
+			if (gameid < 6 || gameid == 13 || gameid == 14) {//番摊
+				haoma_type = '<li class="line"><span>--</span><span>--</span><span>--</span></li>';
+			} else if (gameid == 6) {//北京赛车
+				haoma_type = '<li class="line"><span>--</span><span>--</span><span>--</span><span>--</span><span>--</span><span>--</span><span>--</span><span>--</span></li>';
+			} else if (gameid == 7) {//时时彩
+				haoma_type = '<li class="line"><span>--</span><span>--</span><span>--</span><span>--</span></li>';
+			} else if (gameid == 9 || gameid == 10) {//28
+				haoma_type = '<li class="line"><span>--</span><span>--</span><span>--</span></li>';
+			} else if (gameid == 12) {//六博
+				haoma_type = '<li class="line"><span>--</span><span>--</span><span>--</span></li>';
+			}
+		}
+		//拼接数据
+		html += ''+
+		'<ul>'+
+			'<li class="w50 tl qishu">'+v.qishu+'</li>'+
+			'<li class="w50 tr time">'+getLocalTime(v.sendtime)+'</li>'+
+			'<li class="hm_list">'+haoma+'</li>'+
+			haoma_type+
+		'</ul>';
+	});
+	setTimeout(function() {//让加载效果显示，并保证元素加载完成
+		if (html) {
+			$('.list').empty().append(html);
+		} else {
+			$('.list').empty().append('<div class="no-data">'+__('no_data')+'</div>');
+		}
+	}, 100);
+	//搜索事件
+	$('#gosearch').click(function() {
+		var daytime = $('#daytime').val();
+		var win = $('#win').val();
+		if (win) win = '&win='+win;
+		location.href = '?a=haoma&daytime='+daytime+win;
+	});
+	var haoma = new Array();
+	$('.sethaoma a').click(function(index) {
+		$(this).addClass('a').siblings().removeClass();
+		var index = $(this).index();
+		$('.list ul').each(function(i) {
+			if (!haoma[i]) haoma[i] = $(this).find('li.hm_list').html();//将开奖号码存储到数组
+			if (index == 0) {//切回原号码
+				$(this).find('li.hm_list').html(haoma[i]);
+			} else if (index == 1) {
+				var v_dx_html = '';
+				$(haoma[i]).siblings('i').each(function(s){
+					var v = parseInt($(this).text());
+					v_dx_html += v > 4 ? '<i class="dxd">'+__('big')+'</i>' : '<i class="dxx">'+__('small')+'</i>';
+				});
+				$(this).find('li.hm_list').html(v_dx_html);
+			} else {
+				var v_ds_html = '';
+				$(haoma[i]).siblings('i').each(function(s){
+					var v = parseInt($(this).text());
+					v_ds_html += v % 2 == 0 ? '<i class="dsd">'+__('odd')+'</i>' : '<i class="dss">'+__('even')+'</i>';
+				});
+				$(this).find('li.hm_list').html(v_ds_html);
+			}
+		});
+	});
+	//展开搜索
+	$('.table .hd a.search').click(function() {
+		if ($(this).hasClass('a')) {
+			$(this).removeClass('a');
+			$('.table .hd .title').slideUp();
+		} else {
+			$(this).addClass('a');
+			$('.table .hd .title').stop().slideDown();
+		}
+	});
+	//自动调整窗口
+	$(window).resize(function() {
+		var h = $(window).height();
+		$('.scroll_box').css({'height':h-49});
+	}).resize();
+});
+</script>
+<?php include template("footer"); ?>

@@ -1,0 +1,54 @@
+<?php include template("header"); ?>
+<div class="main cash">
+        <div class="header">
+                <a class="back" href="?a=user" title="返回"><i class="iconfont icon-fanhui"></i></a>
+                <a class="home" href="?a=init" title="首页"><i class="iconfont icon-home"></i></a>
+                <h4><?php echo $headername?></h4>
+        </div>
+        <div class="scroll_box">
+                <div class="table">
+                        <div class="list">
+                                <div class="onload"></div>
+                        </div>
+                </div>
+                <div id="pages"><?php echo $pages?></div>
+        </div>
+</div>
+<script type="text/javascript">
+var cashdata = <?php echo $cashdata?>;//数据
+var stamp = '<?php echo $this -> setting['stamp']?>';//货币单位
+var state = new Array('<span style="color: #FFA700;">'+__('wait_process')+'</span>', '<span style="color: #0070FF;">'+__('processing')+'</span>', '<span style="color: #00B520;">'+__('withdraw_success')+'</span>', '<span style="color: #F00;">'+__('withdraw_failed')+'</span>');
+$(function(){
+        var html = '';
+        $.each(cashdata,function(i,v){
+                var comment = '';
+                if (v.comment != '') {
+                        comment = '<li class="msg">'+v.comment+'</li>';
+                }
+                //拼接数据
+                html += ''+
+                '<ul>'+
+                        '<li class="w50 tl state">'+state[v.state]+'</li>'+
+                        '<li class="w50 tr time">'+getLocalTime(v.addtime)+'</li>'+
+                        '<li class="w33 val">'+stamp+v.money+'</li>'+
+                        '<li class="w33 f12">'+__('service_fee')+' '+stamp+v.service+'</li>'+
+                        '<li class="w33 f12">'+__('actual')+' '+stamp+(v.money - v.service)+'</li>'+
+                        '<li class="msg">'+v.from+'</li>'+
+                        comment+
+                '</ul>';
+        });
+        setTimeout(function() {//让加载效果显示，并保证元素加载完成
+                if (html) {
+                        $('.list').empty().append(html);
+                } else {
+                        $('.list').empty().append('<div class="no-data">'+__('no_data')+'</div>');
+                }
+        }, 100);
+        //自动调整窗口
+        $(window).resize(function() {
+                var h = $(window).height();
+                $('.scroll_box').css({'height':h-49});
+        }).resize();
+});
+</script>
+<?php include template("footer"); ?>

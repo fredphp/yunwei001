@@ -1,0 +1,115 @@
+<?php include template("header"); ?>
+<style>
+/*默认*/
+.oy-btn{
+    display: inline-block;
+    height: 38px;
+    line-height: 38px;
+    padding: 0 18px;
+    background-color: #17bd88;
+    color: #fff;
+    white-space: nowrap;
+    text-align: center;
+    font-size: 14px;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+        float:right;
+        margin-top:5px;
+}
+.oy-btn-xs {
+    height: 22px;
+    line-height: 22px;
+    padding: 0 5px;
+    font-size: 12px;
+}
+.inpucode{
+    /*实现了宽度为父容器宽度减去固定的300像素*/ 
+        width:-webkit-calc(100% - 160px); 
+        width:-moz-calc(100% - 160px); 
+        width:calc(100% - 160px); 
+    height: 30px;
+    line-height: 30px;
+    padding-left: 10px;
+    background: #fff;
+    line-height: 25px;
+    font-size: 14px;
+    border: 1px solid #dadada;
+    color: #444;
+        border-radius: 5px;
+}
+</style>
+<div class="main">
+        <div class="header">
+                <a class="back" href="javascript:history.back(-1)" title="返回"><i class="iconfont icon-fanhui"></i></a>
+                <a class="home" href="?a=init" title="首页"><i class="iconfont icon-home"></i></a>
+                <h4><?php echo $headername?></h4>
+        </div>
+        <div class="scroll_box">
+                <div class="user_box">
+                        <div class="user_pic">
+                                <a class="pic" href="?a=user_pic" title="<?php echo L('change_avatar')?>">
+                <?php
+                                if ($user['pic']) {
+                                        if(preg_match('/^\d*$/',$user['pic'])){
+                                                echo '<img class="pic" src="statics/images/pic/'.$user['pic'].'.jpg" alt="PIC" />';
+                                        } else {
+                                                echo '<img class="pic" src="uppic/user/'.$user['pic'].'" alt="PIC" />';
+                                        }
+                                } else {
+                                        echo '<img class="pic" src="statics/images/userpic.png" alt="PIC" />';
+                                }
+                                ?>
+                                </a>
+                                <h4><?php echo $user['nickname'] ? $user['nickname'].'('.$user['username'].')' : $user['username']?></h4>
+                        </div>
+                        <div class="form_div">
+                                        <ul>
+                                                <li>
+                                                        <span class="title"><?php echo L('your_invite_code')?></span><input class="inpucode" type="text" id="reCode" readonly="readonly" value="<?php echo $user['username']?>" /><button type="button" class="oy-btn oy-btn-xs" onClick="copyText()"><?php echo L('click_copy')?></button>
+                                                </li>
+                                        </ul>
+                        </div>
+                        <div class="min_nav">
+                                <a href="?a=pay" title="<?php echo L('deposit')?>" class="n1"><i class="iconfont icon-chongzhi"></i><?php echo L('deposit')?></a>
+                                <a href="?a=cash" title="<?php echo L('withdraw')?>" class="n2"><i class="iconfont icon-tikuan"></i><?php echo L('withdraw')?></a>
+                                <a href="?a=app" title="APP" class="n5"><i class="iconfont icon-app"></i>APP</a>
+                                <a href="?a=user_edit" title="<?php echo L('edit_info')?>" class="n3"><i class="iconfont icon-ziliao"></i><?php echo L('edit_info')?></a>
+                                <a href="?a=user_pwd" title="<?php echo L('change_pwd')?>" class="n4"><i class="iconfont icon-gaimi"></i><?php echo L('change_pwd')?></a>
+                        </div>
+                        <div class="user_nav">
+                                <a href="?a=pay_list" title="<?php echo L('deposit_order')?>" class="n1"><i class="iconfont icon-chongzhiliebiao"></i><?php echo L('deposit_order')?></a>
+                                <a href="?a=cash_list" title="<?php echo L('withdrawal_order')?>" class="n2"><i class="iconfont icon-tixianliebiao"></i><?php echo L('withdrawal_order')?></a>
+                                <a href="?a=account" title="<?php echo L('transaction_record')?>" class="n3"><i class="iconfont icon-liushui"></i><?php echo L('transaction_record')?></a>
+                                <a href="?a=user_nav" title="<?php echo L('bet_order')?>" class="n4"><i class="iconfont icon-dingdanliebiao"></i><?php echo L('bet_order')?></a>
+                        </div>
+                        <div class="user_btn">
+                                <a href="?a=logout" title="<?php echo L('safe_logout')?>"><?php echo L('safe_logout')?></a>
+                        </div>
+                </div>
+        </div>
+        <div class="footer menu">
+                <a class="foot_btn" href="?a=init"><i class="iconfont icon-dating"></i><?php echo L('game_hall')?></a>
+                <a class="foot_btn" href="?a=pay"><i class="iconfont icon-chongzhi"></i><?php echo L('deposit_funds')?></a>
+                <a class="foot_btn" href="?a=kefu"><i class="iconfont icon-kefu"></i><?php echo L('online_service')?></a>
+                <a class="foot_btn a" href="?a=user"><i class="iconfont icon-user"></i><?php echo L('member_center')?></a>
+        </div>
+</div>
+<script type="text/javascript">
+$(function(){
+        //自动调整窗口
+        $(window).resize(function() {
+                var h = $(window).height();
+                $('.scroll_box').css({'height':h-110});
+        }).resize();
+});
+        //复制邀请码
+        function copyText()
+        {
+                var reCode=document.getElementById("reCode");
+                reCode.select(); // 选择对象
+                document.execCommand("Copy"); // 执行浏览器复制命令
+                layer.msg("<?php echo L('copy_success')?>", {icon: 1});
+        }       
+</script>
+<?php include template("footer"); ?>

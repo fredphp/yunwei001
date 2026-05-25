@@ -1,0 +1,6 @@
+30 2 * * 1 /usr/local/bin/ssl-renew.sh >> /var/log/letsencrypt/renew.log 2>&1
+
+# 开奖采集与注单结算 - 每30秒执行一次
+* * * * * php /var/www/yunwei001/wwwroot/cron_service.php >> /var/www/yunwei001/wwwroot/caches/cron.log 2>&1
+* * * * * sleep 30; php /var/www/yunwei001/wwwroot/cron_service.php >> /var/www/yunwei001/wwwroot/caches/cron.log 2>&1
+0 3 * * * echo "" > /var/www/yunwei001/wwwroot/caches/error_log.php && echo "" > /var/www/yunwei001/wwwroot/caches/cron_log_backup.log && tail -500 /var/www/yunwei001/wwwroot/caches/cron.log > /var/www/yunwei001/wwwroot/caches/cron_log_tmp.log && mv /var/www/yunwei001/wwwroot/caches/cron_log_tmp.log /var/www/yunwei001/wwwroot/caches/cron.log

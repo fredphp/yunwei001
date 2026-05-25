@@ -1,0 +1,91 @@
+<?php include template("header"); ?>
+<div class="main">
+        <div class="header">
+                <a class="back" href="?a=user" title="&#x8FD4;&#x56DE;"><i class="iconfont icon-fanhui"></i></a>
+                <a class="home" href="?a=init" title="&#x9996;&#x9875;"><i class="iconfont icon-home"></i></a>
+                <h4><?php echo $headername?></h4>
+        </div>
+        <div class="scroll_box">
+                <div class="user_box">
+                        <div class="pay_ewm">
+                                <?php echo $ewm_tps ?>
+                                <div class="btn">
+                                        <?php echo $btn ?>
+                                </div>
+                                <div class="ewm">
+                                        <ul>
+                                                <?php echo $ewm ?>
+                                        </ul>
+                                </div>
+                        </div>
+                        <form action="?a=pay" method="post" id="send_form" onsubmit="return false;">
+                                <input type="hidden" name="dosubmit" id="dosubmit" value="yes" />
+                                <div class="form_div">
+                                        <ul>
+                                                <li>
+                                                        <input class="inputxt" type="text" id="money" name="money" value="" placeholder="<?php echo L('min_deposit_amount')?><?php echo $this -> setting['stamp'].$this -> setting['pay']?>" />
+                                                </li>
+                                                <li>
+                                                        <span class="title"><?php echo L('to_account')?><?php echo $user['username']?></span>
+                                                </li>
+                                                <li>
+                                                        <input class="inputxt" type="text" id="comment" name="comment" value="" placeholder="<?php echo L('comment_for_agent')?>" />
+                                                </li>
+                                        </ul>
+                                </div>
+                                <div class="submit"><input type="submit" id="submit" name="submit" value="<?php echo L('submit')?>"></div>
+                        </form>
+                </div>
+                <div class="tps">
+                        <h4><?php echo $config['remark'] ?></h4>
+                        <h4><?php echo L('tips')?>：</h4>
+                        <p>1、<?php echo L('min_deposit_is')?><?php echo $this -> setting['stamp'].$this -> setting['pay']?></p>
+                        <p>2、<?php echo L('gambling_warning')?></p>
+                </div>
+        </div>
+</div>
+<script type="text/javascript" src="<?php echo JS_PATH?>Validform_v5.3.2.js"></script>
+<script type="text/javascript">
+$(function(){
+        var Vform = $("#send_form").Validform();
+        Vform.config({
+                tiptype:1,
+                ajaxPost:true,
+                callback:function(data){
+                        if(data.status == 'y'){
+                                Vform.resetForm();//&#x521D;&#x59CB;&#x5316;&#x8868;&#x5355;
+                                setTimeout(function(){//2&#x79D2;&#x540E;&#x5237;&#x65B0;
+                                        //location.href = '?a=pay_ewm&payid='+data.payid;
+                                        location.href = '?a=pay_list';
+                                }, 2000);
+                        }
+                }
+        });
+        Vform.addRule([
+                {
+                        ele:'#money',
+                        datatype:'rmb2',
+                        nullmsg:'<?php echo L('enter_amount')?>',
+                        errormsg:'<?php echo L('enter_correct_currency')?>'
+                },
+                {
+                        ele:'#comment',
+                        datatype:'s1-50',
+                        ignore:'ignore',
+                        nullmsg:'<?php echo L('enter_comment')?>',
+                        errormsg:'<?php echo L('comment_max_50')?>'
+                },
+        ]);
+        //&#x81EA;&#x52A8;&#x8C03;&#x6574;&#x7A97;&#x53E3;
+        $(window).resize(function() {
+                var h = $(window).height();
+                $('.scroll_box').css({'height':h-49});
+        }).resize();
+        //&#x4E8C;&#x7EF4;&#x7801;&#x5207;&#x6362;
+        $('.btn a').click(function() {
+                $(this).addClass('a').siblings().removeClass('a');
+                $('.ewm li').eq($(this).index()).addClass('a').siblings().removeClass('a');
+        });
+});
+</script>
+<?php include template("footer"); ?>

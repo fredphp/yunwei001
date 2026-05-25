@@ -1,0 +1,86 @@
+<?php include template("header"); ?>
+<div class="main">
+	<div class="header">
+		<a class="back" href="javascript:history.back(-1)" title="<?php echo L('rules_back')?>"><i class="iconfont icon-fanhui"></i></a>
+		<a class="home" href="?a=init" title="<?php echo L('rules_home')?>"><i class="iconfont icon-home"></i></a>
+		<h4><?php echo $headername?></h4>
+	</div>
+	<div class="scroll_box">
+		<div class="rules">
+			<div class="title"><?php echo L('rules_pc28_title')?></div>
+			<div class="msg">
+				<h5><?php echo L('rules_declaration_title')?></h5>
+				<p><?php echo L('rules_declaration_1')?></p>
+				<p><?php echo L('rules_declaration_2')?></p>
+				<p><?php echo L('rules_declaration_3')?></p>
+				<p><?php echo L('rules_declaration_4')?></p>
+				<p><?php echo L('rules_declaration_5')?></p>
+				<p><?php echo L('rules_declaration_6')?></p>
+				<p><?php echo L('rules_declaration_7')?></p>
+				<p><?php echo L('rules_declaration_8')?></p>
+				<p><?php echo L('rules_declaration_9')?></p>
+				<h5><?php echo L('rules_pc28_subtitle1')?></h5>
+				<p><?php echo L('rules_pc28_desc1')?></p>
+				<p><?php echo L('rules_pc28_desc1b')?></p>
+				<p><?php echo L('rules_pc28_desc1c')?></p>
+				<h5><?php echo L('rules_pc28_subtitle2')?></h5>
+				<p><?php echo L('rules_pc28_desc2')?></p>
+				<p><?php echo L('rules_pc28_desc2b')?></p>
+				<p><?php echo L('rules_pc28_desc2c')?></p>
+				<h5><?php echo L('rules_pc28_gameplay')?></h5>
+				<p><?php echo L('rules_pc28_gameplay_desc')?></p>
+				<p><span><?php echo L('rules_pc28_pc_1314')?></span></p>
+				<div>
+					<p><span><?php echo L('rules_pc28_pc_1314_note')?></span></p>
+					<p><?php echo L('rules_pc28_pc_1314_rule1')?></p>
+					<p><?php echo L('rules_pc28_pc_1314_rule2')?></p>
+					<p><?php echo L('rules_pc28_pc_1314_rule3')?></p>
+				</div>
+				<p><span><?php echo L('rules_pc28_ca_1314')?></span></p>
+				<div>
+					<p><span><?php echo L('rules_pc28_ca_1314_note')?></span></p>
+					<p><?php echo L('rules_pc28_ca_1314_rule1')?></p>
+					<p><?php echo L('rules_pc28_ca_1314_rule2')?></p>
+					<p><?php echo L('rules_pc28_ca_1314_rule3')?></p>
+				</div>
+				<p><span><?php echo L('rules_pc28_big_small_odd_even')?></span></p>
+				<div>
+					<p><span><?php echo L('rules_pc28_big')?></span><?php echo L('rules_pc28_big_desc')?></p>
+					<p><span><?php echo L('rules_pc28_small')?></span><?php echo L('rules_pc28_small_desc')?></p>
+					<p><span><?php echo L('rules_pc28_odd')?></span><?php echo L('rules_pc28_odd_desc')?></p>
+					<p><span><?php echo L('rules_pc28_even')?></span><?php echo L('rules_pc28_even_desc')?></p>
+					<p><span><?php echo L('rules_pc28_big_odd')?></span><?php echo L('rules_pc28_big_odd_desc')?></p>
+					<p><span><?php echo L('rules_pc28_small_odd')?></span><?php echo L('rules_pc28_small_odd_desc')?></p>
+					<p><span><?php echo L('rules_pc28_big_even')?></span><?php echo L('rules_pc28_big_even_desc')?></p>
+					<p><span><?php echo L('rules_pc28_small_even')?></span><?php echo L('rules_pc28_small_even_desc')?></p>
+				</div>
+				<p><span><?php echo L('rules_pc28_extreme')?></span></p>
+				<div>
+					<p><span><?php echo L('rules_pc28_extreme_big')?></span><?php echo L('rules_pc28_extreme_big_desc')?></p>
+					<p><span><?php echo L('rules_pc28_extreme_small')?></span><?php echo L('rules_pc28_extreme_small_desc')?></p>
+				</div>
+				<p><span><?php echo L('rules_pc28_color')?></span></p>
+				<div>
+					<p><span><?php echo L('rules_pc28_red')?></span><?php echo L('rules_pc28_red_desc')?></p>
+					<p><span><?php echo L('rules_pc28_blue')?></span><?php echo L('rules_pc28_blue_desc')?></p>
+					<p><span><?php echo L('rules_pc28_green')?></span><?php echo L('rules_pc28_green_desc')?></p>
+					<p><span><?php echo L('rules_pc28_color_note')?></span></p>
+				</div>
+				<p><span><?php echo L('rules_pc28_triple')?></span></p>
+				<div>
+					<p><span><?php echo L('rules_pc28_triple_desc')?></span></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(function(){
+	//自动调整窗口
+	$(window).resize(function() {
+		var h = $(window).height();
+		$('.scroll_box').css({'height':h-49});
+	}).resize();
+});
+</script>
+<?php include template("footer"); ?>

@@ -1,0 +1,46 @@
+<?php include template("header"); ?>
+<div class="main">
+	<div class="header">
+		<a class="back" href="javascript:history.back(-1)" title="<?php echo L('rules_back')?>"><i class="iconfont icon-fanhui"></i></a>
+		<a class="home" href="?a=init" title="<?php echo L('rules_home')?>"><i class="iconfont icon-home"></i></a>
+		<h4><?php echo $headername?></h4>
+	</div>
+	<div class="scroll_box">
+		<div class="rules">
+			<div class="title"><?php echo L('rules_gdkl_title')?></div>
+			<div class="msg">
+				<h5><?php echo L('rules_declaration_title')?></h5>
+				<p><?php echo L('rules_declaration_1')?></p>
+				<p><?php echo L('rules_declaration_2')?></p>
+				<p><?php echo L('rules_declaration_3')?></p>
+				<p><?php echo L('rules_declaration_4')?></p>
+				<p><?php echo L('rules_declaration_5')?></p>
+				<p><?php echo L('rules_declaration_6')?></p>
+				<p><?php echo L('rules_declaration_7')?></p>
+				<p><?php echo L('rules_declaration_8')?></p>
+				<p><?php echo L('rules_declaration_9')?></p>
+				<h5><?php echo L('rules_gdkl_subtitle')?></h5>
+				<p></p>
+				<h5><?php echo L('rules_gdkl_gameplay')?></h5>
+				<p><span><?php echo L('rules_gdkl_rule_1')?></span></p>
+				<div>
+					<p></p>
+				</div>
+				<p><span><?php echo L('rules_gdkl_rule_2')?></span></p>
+				<div>
+					<p></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(function(){
+	//自动调整窗口
+	$(window).resize(function() {
+		var h = $(window).height();
+		$('.scroll_box').css({'height':h-49});
+	}).resize();
+});
+</script>
+<?php include template("footer"); ?>

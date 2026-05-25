@@ -1,0 +1,111 @@
+<?php include template("header"); ?>
+<div class="main">
+        <div class="header">
+                <a class="back" href="?a=user" title="返回"><i class="iconfont icon-fanhui"></i></a>
+                <a class="home" href="?a=init" title="首页"><i class="iconfont icon-home"></i></a>
+                <h4><?php echo $headername?></h4>
+        </div>
+        <div class="scroll_box">
+                <div class="user_box">
+                        <form enctype="multipart/form-data" action="?a=user_pic" method="post" id="send_form" onsubmit="Submit();">
+                                <input type="hidden" name="dosubmit" id="dosubmit" value="yes" />
+                                <div class="form_div">
+                                        <ul>
+                                                <li>
+                                                        <?php
+                                                        if ($user['pic']) {
+                                                                if(preg_match('/^\d*$/',$user['pic'])){
+                                                                        echo '<img class="pic" src="statics/images/pic/'.$user['pic'].'.jpg" alt="PIC" />';
+                                                                } else {
+                                                                        echo '<img class="pic" src="uppic/user/'.$user['pic'].'" alt="PIC" />';
+                                                                }
+                                                        } else {
+                                                                echo '<img class="pic" src="statics/images/userpic.png" alt="PIC" />';
+                                                        }
+                                                        ?>
+                                                        <strong class="filetps"><?php echo L('set_avatar_tip')?></strong>
+                                                        <input type="file" id="file" name="file" accept="image/*" style="display:none;"/>
+                                                </li>
+                                                <li>
+                                                        <div class="defaultpic">
+                                                                <h6><?php echo L('select_system_avatar')?></h6>
+                                                                <img src="statics/images/pic/1.jpg" alt="" />
+                                                                <img src="statics/images/pic/2.jpg" alt="" />
+                                                                <img src="statics/images/pic/3.jpg" alt="" />
+                                                                <img src="statics/images/pic/4.jpg" alt="" />
+                                                                <img src="statics/images/pic/5.jpg" alt="" />
+                                                                <img src="statics/images/pic/6.jpg" alt="" />
+                                                                <img src="statics/images/pic/7.jpg" alt="" />
+                                                                <img src="statics/images/pic/8.jpg" alt="" />
+                                                                <img src="statics/images/pic/9.jpg" alt="" />
+                                                                <img src="statics/images/pic/10.jpg" alt="" />
+                                                                <img src="statics/images/pic/11.jpg" alt="" />
+                                                                <img src="statics/images/pic/12.jpg" alt="" />
+                                                                <img src="statics/images/pic/13.jpg" alt="" />
+                                                                <img src="statics/images/pic/14.jpg" alt="" />
+                                                                <img src="statics/images/pic/15.jpg" alt="" />
+                                                                <img src="statics/images/pic/16.jpg" alt="" />
+                                                                <img src="statics/images/pic/17.jpg" alt="" />
+                                                                <img src="statics/images/pic/18.jpg" alt="" />
+                                                                <img src="statics/images/pic/19.jpg" alt="" />
+                                                                <img src="statics/images/pic/20.jpg" alt="" />
+                                                                <img src="statics/images/pic/21.jpg" alt="" />
+                                                                <img src="statics/images/pic/22.jpg" alt="" />
+                                                                <img src="statics/images/pic/23.jpg" alt="" />
+                                                                <img src="statics/images/pic/24.jpg" alt="" />
+                                                                <img src="statics/images/pic/25.jpg" alt="" />
+                                                        </div>
+                                                </li>
+                                        </ul>
+                                </div>
+                                <input type="hidden" name="dpic" id="dpic" value="" />
+                                <div class="submit"><input type="submit" id="submit" name="submit" value="<?php echo L('save')?>"></div>
+                        </form>
+                </div>
+        </div>
+</div>
+<script type="text/javascript">
+var msg = <?php echo $msg?>;
+if (msg.ico) {
+        layer.msg(msg.info, {icon: msg.ico});
+        if (msg.ico == 6) {
+                setTimeout(function(){//2秒后刷新
+                        location.href = '?a=user';
+                }, 2000);
+        }
+}
+
+function Submit(){
+        layer.msg('<?php echo L('saving_please_wait')?>', {icon: 16, time: 0, shade: 0.2});
+}
+
+$(function(){
+        $('.form_div img.pic').click(function() {
+                var file = $('#file').val();
+                if (file) {
+                        $('#file').val('');
+                        $('.filetps').text('<?php echo L('click_avatar_select')?>');
+                } else {
+                        $('#file').trigger('click');
+                }
+        });
+        $('#file').change(function() {
+                $('.filetps').text('<?php echo L('image_selected_click_cancel')?>');
+                $('#dpic').val('');
+                $('.defaultpic img').removeClass('a');
+        });
+        $('.defaultpic img').click(function(){
+                $(this).addClass('a').siblings().removeClass();
+                var srcid = $(this).attr('src').replace(/statics\/images\/pic\/([0-9]+)\.jpg/g, '$1');
+                $('#dpic').val(srcid);
+                $('#file').val('');
+                $('.filetps').text('<?php echo L('click_avatar_select')?>');
+        });
+        //自动调整窗口
+        $(window).resize(function() {
+                var h = $(window).height();
+                $('.scroll_box').css({'height':h-49});
+        }).resize();
+});
+</script>
+<?php include template("footer"); ?>

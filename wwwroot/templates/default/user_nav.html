@@ -1,0 +1,36 @@
+<?php include template("header"); ?>
+<div class="main">
+        <div class="header">
+                <a class="back" href="javascript:history.back(-1)" title="返回"><i class="iconfont icon-fanhui"></i></a>
+                <a class="home" href="?a=init" title="首页"><i class="iconfont icon-home"></i></a>
+                <h4><?php echo $headername?></h4>
+        </div>
+        <div class="scroll_box">
+                <div class="user_box">
+                        <div class="user_nav">
+                                <?php
+                                foreach ($gamedb as $v) {
+                                        $game_name = T('game', $v['id'], 'name', $v['name']);
+                                        echo '<a href="?a=order&gameid='.$v['id'].'" title="'.$game_name.'" class="n4"><i class="iconfont icon-dingdanliebiao"></i>'.$game_name.'</a>';
+                                }
+                                ?>
+                        </div>
+                </div>
+        </div>
+        <div class="footer menu">
+                <a class="foot_btn" href="?a=init"><i class="iconfont icon-dating"></i><?php echo L('game_hall')?></a>
+                <a class="foot_btn" href="?a=pay"><i class="iconfont icon-chongzhi"></i><?php echo L('deposit_funds')?></a>
+                <a class="foot_btn" href="?a=kefu"><i class="iconfont icon-kefu"></i><?php echo L('online_service')?></a>
+                <a class="foot_btn a" href="?a=user"><i class="iconfont icon-user"></i><?php echo L('member_center')?></a>
+        </div>
+</div>
+<script type="text/javascript">
+$(function(){
+        //自动调整窗口
+        $(window).resize(function() {
+                var h = $(window).height();
+                $('.scroll_box').css({'height':h-110});
+        }).resize();
+});
+</script>
+<?php include template("footer"); ?>

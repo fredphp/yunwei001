@@ -1,0 +1,15 @@
+<?php
+return array (
+    'default' => array (
+        'hostname' => 'localhost',
+        'database' => 'fantan_db',
+        'username' => 'root',
+        'password' => 'YOUR_DB_PASSWORD_HERE',  // ⚠️ 部署后请修改为实际密码
+        'tablepre' => 'bc_',
+        'charset' => 'utf8mb4',
+        'type' => 'mysqli',
+        'debug' => false,
+        'pconnect' => 0,
+        'autoconnect' => 0
+    )
+);

@@ -1,0 +1,20 @@
+# 蚁彩系统 - 开奖采集与注单结算计划任务
+# 每30秒执行一次cron_service.php
+# 路径对应Docker容器内: /var/www/html/wwwroot/
+
+# 设置PATH环境变量（cron最小化环境默认PATH=/usr/bin:/bin，不含PHP路径）
+PATH=/usr/local/bin:/usr/bin:/bin
+
+# Docker环境标识（cron_service.php据此自动选择内部URL）
+DOCKER_CRON=1
+
+# 开奖采集+结算（每分钟第0秒执行）
+* * * * * DOCKER_CRON=1 /usr/local/bin/php /var/www/html/wwwroot/cron_service.php >> /var/www/html/wwwroot/caches/cron.log 2>&1
+
+# 开奖采集+结算（每分钟第30秒执行）
+* * * * * sleep 30; DOCKER_CRON=1 /usr/local/bin/php /var/www/html/wwwroot/cron_service.php >> /var/www/html/wwwroot/caches/cron.log 2>&1
+
+# 每天凌晨3点清理日志（防止日志文件过大）
+0 3 * * * echo "" > /var/www/html/wwwroot/caches/error_log.php && tail -500 /var/www/html/wwwroot/caches/cron.log > /var/www/html/wwwroot/caches/cron_log_tmp.log && mv /var/www/html/wwwroot/caches/cron_log_tmp.log /var/www/html/wwwroot/caches/cron.log
+
+# 空行结尾（crontab要求）

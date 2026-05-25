@@ -1,0 +1,45 @@
+<?php include template("header"); ?>
+<div class="main">
+        <div class="header">
+                <a class="back" href="javascript:history.back(-1)" title="返回"><i class="iconfont icon-fanhui"></i></a>
+                <a class="pic" href="?a=user" title="">
+                        <?php
+                        if ($user['pic']) {
+                                if(preg_match('/^\d*$/',$user['pic'])){
+                                        echo '<img class="pic" src="statics/images/pic/'.$user['pic'].'.jpg" alt="PIC" />';
+                                } else {
+                                        echo '<img class="pic" src="uppic/user/'.$user['pic'].'" alt="PIC" />';
+                                }
+                        }
+                        ?>
+                </a>
+                <h4><?php echo $headername?></h4>
+        </div>
+        <div class="scroll_box">
+                <div class="m_nva two">
+                        <ul>
+                                <!-- 导航部分 -->
+                                <?php echo $gameheadhtml?>
+                                <li>
+                                        <a class="nav_rules" href="?a=rules&gamename=fantan" title="<?php echo L('game_rules')?>"><?php echo L('game_rules')?><span>Rules</span></a>
+                                </li>
+                        </ul>
+                </div>
+        </div>
+        <div class="footer menu">
+                <a class="foot_btn a" href="?a=init"><i class="iconfont icon-dating"></i><?php echo L('game_hall')?></a>
+                <a class="foot_btn" href="?a=pay"><i class="iconfont icon-chongzhi"></i><?php echo L('deposit_funds')?></a>
+                <a class="foot_btn" href="?a=kefu"><i class="iconfont icon-kefu"></i><?php echo L('online_service')?></a>
+                <a class="foot_btn" href="?a=user"><i class="iconfont icon-user"></i><?php echo L('member_center')?></a>
+        </div>
+</div>
+<script type="text/javascript">
+        $(function(){
+                //自动调整窗口
+                $(window).resize(function() {
+                        var h = $(window).height();
+                        $('.scroll_box').css({'height':h-110});
+                }).resize();
+        });
+</script>
+<?php include template("footer"); ?>

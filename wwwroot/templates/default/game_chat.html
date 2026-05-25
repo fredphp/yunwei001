@@ -1,0 +1,537 @@
+<?php include template("header"); ?>
+<div class="main">
+        <div class="header">
+                <a class="back" href="javascript:history.back(-1)" title="返回"><i class="iconfont icon-fanhui"></i></a>
+                <a class="pic" href="?a=user" title="<?php echo L('member_center')?>">
+                        <?php
+                        if ($user['pic']) {
+                                if(preg_match('/^\d*$/',$user['pic'])){
+                                        echo '<img class="pic" src="statics/images/pic/'.$user['pic'].'.jpg" alt="PIC" />';
+                                } else {
+                                        echo '<img class="pic" src="uppic/user/'.$user['pic'].'" alt="PIC" />';
+                                }
+                        }
+                        ?>
+                </a>
+                <a class="order" href="?a=order" title="<?php echo L('my_bet_order')?>"><i class="iconfont icon-liebiao"></i></a>
+                <h4><?php echo $gamename?></h4>
+        </div>
+        <div class="scroll_box">
+                <div class="lottery_box">
+                        <div class="lottery_top">
+                                <div class="lottery_now">
+                                        <div id="qishu_now">
+                                                <i>001</i><?php echo L('period')?>
+                                        </div>
+                                        <div id="haoma" class="hm_list"></div>
+                                        <div id="haoma_type"></div>
+                                </div>
+                                <div class="user">
+                                        <?php if($user) { ?>
+                                                <a href="?a=account" title="<?php echo L('funds_flow')?>"><i class="iconfont icon-money"></i><?php echo $this -> setting['stamp'].' <em id="money_now">'.$user['money'].'</em>' ?></a>
+                                        <?php } else { ?>
+                                                <a href="?a=login" title="<?php echo L('user_login')?>"><i class="iconfont icon-money"></i><?php echo L('please_login')?></a>
+                                        <?php } ?>
+                                </div>
+                        </div>
+                        <div class="lottery_next">
+                                <span id="qishu_next">
+                                        <i>002</i><?php echo L('period')?>
+                                </span>
+                                <span id="time"><i>00:00</i><em><?php echo L('sealed')?></em></span>
+                                <a class="go_more" href="?a=haoma"><?php echo L('history_lottery')?></a>
+                                <a class="more" href="javascript:;" title="<?php echo L('more')?>"></a>
+                        </div>
+                        <div class="val_box">
+                                <span><?php echo L('road_map')?></span>
+                                <span class="val_list">
+                                        <em><?php echo L('loading')?></em>
+                                </span>
+                        </div>
+                        <div class="haoma_box">
+                                <ul>
+                                        <div class="onload"></div>
+                                </ul>
+                                <a class="more" href="?a=haoma"><?php echo L('more')?></a>
+                        </div>
+                </div>
+                <div class="chat_box">
+                        <ul>
+                        </ul>
+                </div>
+                <div class="game_box">
+                        <?php include template("game_chat_".$gametemplate); ?>
+                        <div class="send_box">
+                                <h4><?php echo L('quick_bet')?></h4>
+                                <h5><?php echo L('select_bet_hint')?></h5>
+                                <div class="fast_li">
+                                        <a href="javascript:;">10</a>
+                                        <a href="javascript:;">50</a>
+                                        <a href="javascript:;">100</a>
+                                        <a href="javascript:;">200</a>
+                                        <a href="javascript:;">500</a>
+                                        <a href="javascript:;">1000</a>
+                                </div>
+                                <div class="btn_li">
+                                        <span><?php echo L('bet_amount')?></span>
+                                        <input type="text" id="money" value="" />
+                                        <input type="hidden" id="ban" value="">
+                                        <a id="send" href="javascript:;"><?php echo L('bet')?></a>
+                                        <a class="cancel" href="javascript:;"><?php echo L('reset')?></a>
+                                </div>
+                                <a class="hide" href="javascript:;"></a>
+                        </div>
+                        <a class="rules" href="?a=rules"><?php echo L('how_to_play')?></a>
+                        <div class="game_box_shade"></div>
+                </div>
+        </div>
+        <div class="footer">
+                <a class="game_btn" href="javascript:;"><?php echo L('bet')?></a>
+        </div>
+</div>
+<script type="text/javascript">
+//强制页面刷新
+
+if(window.name != "bencalie"){
+    location.reload();
+    window.name = "bencalie";
+}
+else{
+    window.name = "";
+}
+
+window.addEventListener('pageshow', function(event) {
+        //event.persisted属性为true时，表示当前文档是从往返缓存中获取
+        if(event.persisted) location.reload();
+});
+//如下变量仅作为显示及初步验证用 一次查询多处调用
+var gameid = '<?php echo $gameid?>';//游戏ID
+var gamename = '<?php echo $gamename?>';//游戏名称
+var wanfadata = <?php echo $wanfadata?>;//游戏玩法
+var send_money = '<?php echo $send_money?>';//投注限制
+var fptime = <?php echo $fptime?>;//提前封盘时间
+var uid = <?php echo $user ? $user['uid'] : 0?>;//用户UID
+var qishu = 0;
+var nextqishu = 0;
+var getchat = false;
+var sotp = <?php echo $this -> setting['stop']?>;
+var is_one = 0;
+$(function () {
+        var A = wanfadata;
+        $.each(A[1], function (a, c) {
+                a = c.split("@");
+                $(".C_" + a[0] + " em").html(a[1]);
+                a[2] && ($(".C_" + a[0]).attr("sum", a[2]), is_one = 1)
+        });
+        var n = 0,
+        h = !0,
+        f = 0,
+        g = 0,
+        l,
+        q,
+        r,
+        t,
+        m = !1,
+        u = 0,
+        v = function (a, c) {
+                h ? (h = !1, $.ajax({
+                                url: "?a=ajax_haoma&gameid=" + gameid + "&re=" + c,
+                                dataType: "json",
+                                success: function (d) {
+                                        if (d.id) {
+                                                B(d, a);
+                                                if (0 == d.awartime) {
+                                                        d = d.re;
+                                                        var c = 1
+                                                } else
+                                                        d = d.awartime, c = 0;
+                                                p(d, c)
+                                        }
+                                },
+                                error: function () {
+                                        p(1E3, c);
+                                        h = !0;
+                                        console.log("ERR")
+                                }
+                        })) : p(1E3, c)
+        },
+        x = function (a) {
+                $.ajax({
+                        url: "?a=ajax_haoma&gameid=" +
+                        gameid,
+                        dataType: "json",
+                        success: function (a) {
+                                a.id && w(a)
+                        },
+                        error: function () {
+                                setTimeout(function () {
+                                        var a = Date.parse(new Date);
+                                        x(a)
+                                }, 1E3);
+                                console.log("ERR")
+                        }
+                })
+        },
+        p = function (a, c) {
+                var d = Date.parse(new Date);
+                clearTimeout(q);
+                q = setTimeout(function () {
+                                v(d, c)
+                        }, a)
+        },
+        B = function (a, c) {
+                if (parseInt(a.qishu) == qishu)
+                        return h = !0, !1;
+                w(a);
+                qishu && playSound();
+                qishu = parseInt(a.qishu);
+                $("#qishu_now i").html(qishu);
+                n = parseInt(a.sendtime);
+                nextqishu = parseInt(a.nextqishu);
+                g = parseInt(a.awartime) / 1E3;
+                f = g - fptime;
+                0 < f ? (layer.close(l), getchat =
+                                1200 < f ? !1 : !0, $(".game_box_shade").hide(), k('<li class="system"><h5><i class="y"></i>' + nextqishu + " "+__('period_betting')+"</h5></li>"), l = layer.msg(nextqishu + " "+__('period_betting')+"...", {
+                                        icon: 1
+                                }), m = !1) : (getchat = !1, $(".game_box_shade").show(), k('<li class="system"><h5><i class="n"></i>' + nextqishu + " "+__('period_sealed')+"</h5></li>"), l = layer.msg(nextqishu + " "+__('period_sealed_msg')+"...", {
+                                        icon: 4
+                                }), m = !0);
+                $("#qishu_next i, .order_box h4 span").text(nextqishu);
+                r || (r = setInterval(function () {
+                                        f = 0 > f - 1 ? 0 : f - 1;
+                                        g = 0 > g - 1 ? 0 : g - 1;
+                                        0 != f || m || (getchat = !1, $(".game_box_shade").show(), k('<li class="system"><h5><i class="n"></i>' + nextqishu + " "+__('period_sealed')+"</h5></li>"), l = layer.msg(nextqishu + " "+__('period_sealed_msg')+"...", {
+                                                                icon: 4
+                                                        }), m = !0);
+                                        0 < n && 0 == g ? $("#time i").text(__('drawing_lottery')+"...") : 0 == f && 0 < g && $("#time i").text(getTime(g));
+                                        0 < n && 0 == f ? $("#time em").text(__('already_sealed')) : (4 == f && playSound_Djs(), $("#time em").text(__('betting_in_progress')),
+                                                $("#time i").text(getTime(f)))
+                                }, 1E3));
+                C(c);
+                !sotp && y(c);
+                h = !0
+        },
+        w = function (a) {
+                var c = "",
+                d = "";
+                if (a.haoma) {
+                        var e = [];
+                        e = a.haoma.split(",");
+                        var b = 0;
+                        a = e.length;
+                        for (i = 0; i < a; i++)
+                                b += parseInt(e[i]), c += '<i class="' + (4 == gameid || 5 == gameid || 9 == gameid || 13 == gameid || gameid == 14 || 10 == gameid ? "orange" : 6 == gameid ? "pk c" + e[i] : "blue") + '">' + e[i] + "</i>";
+
+                        if (6 > gameid || 13 == gameid || gameid == 14) {
+                                if (gameid == 1 || gameid == 14) {
+                                        b = parseInt(e[3])*10  + parseInt(e[4]);
+                                } else if (gameid == 4 || gameid == 5 || gameid == 13) {
+                                        b = parseInt(e[1])*10  + parseInt(e[2]);
+                                } else if (gameid == 2 || gameid == 3) {
+                                        b = parseInt(e[6])*10  + parseInt(e[7]);
+                                }
+                                d += '<i class="zw">'+__('last_2_digits')+'</i><i>' + b + "</i>";
+                                a = 0 == b % 4 ? 4 : b % 4;
+                                d += '<i class="s">%</i><i class="s c">4</i><i class="s">=</i><i class="z" style="width: 36px;">' +
+                                a + __('fan_unit')+"</i>"
+                        } else if (6 == gameid) {
+                                b = 0;
+                                d = "";
+                                for (i = 0; i < a; i++)
+                                        2 > i && (b += parseInt(e[i])), 5 > i && (d += parseInt(e[i]) > parseInt(e[a - 1 - i]) ? '<i class="s c">'+__('dragon')+'</i>' : '<i class="s c">'+__('tiger')+'</i>');
+                                d = '<i class="zw">'+__('champion_runner_up')+'</i><i>' + b + '</i><i class="s c">' + (11 < b ? __('big') : __('small')) + '</i><i class="s c">' + (0 == b % 2 ? __('even') : __('odd')) + "</i>" + d
+                        } else if (7 == gameid)
+                                d = parseInt(e[0]) > parseInt(e[a - 1]) ? __('dragon') : parseInt(e[0]) == parseInt(e[a - 1]) ? __('tie') : __('tiger'), d = '<i class="zw">'+__('total_sum')+'</i><i>' + b + '</i><i class="s c">' +
+                                        (22 < b ? __('big') : __('small')) + '</i><i class="s c">' + (0 == b % 2 ? __('even') : __('odd')) + '</i><i class="s c">' + d + "</i>";
+                        else if (9 == gameid || 10 == gameid)
+                                d = '<i class="zw">'+__('total_sum')+'</i><i>' + b + '</i><i class="s c">' + (13 < b ? __('big') : __('small')) + '</i><i class="s c">' + (0 == b % 2 ? __('even') : __('odd')) + "</i>";
+                        else if (12 == gameid) {
+                                b = parseInt(e[0] + e[1]);
+                                if (0 == b || 50 == b)
+                                        b = parseInt(e[2] + e[3]);
+                                50 < b && (b -= 50);
+                                d = '<i class="zw">'+__('special_code')+'</i><i>' + b + '</i><i class="s c">' + (49 == b ? __('tie') : 24 < b ? __('big') : __('small')) + '</i><i class="s c">' + (49 == b ?
+                                                __('tie') : 0 == b % 2 ? __('even') : __('odd')) + "</i>"
+                        }
+                } else
+                        c = '<i class="zw">'+__('drawing_lottery')+"...</i>", setTimeout(function () {
+                                var a = Date.parse(new Date);
+                                x(a)
+                        }, 5E3);
+                $("#haoma").html(c);
+                $("#haoma_type").html(d)
+        },
+        z = function (a) {
+                $.ajax({
+                        url: "?a=ajax_gomoney",
+                        data: {},
+                        type: "POST",
+                        dataType: "json",
+                        success: function (a) {
+                                "n" == a.err && $("#money_now").text(a.money)
+                        },
+                        error: function () {
+                                console.log("ERR")
+                        }
+                })
+        },
+        C = function (a) {
+                $(".haoma_box ul").html('<div class="onload"></div>');
+                $.ajax({
+                        url: "?a=ajax_gohaomalist&gameid=" + gameid,
+                        dataType: "json",
+                        success: function (a) {
+                                $(".haoma_box ul, .val_list").empty();
+                                "n" == a.err && $.each(a.order, function (a, e) {
+                                        var b = e.haoma.split(",");
+                                        var d = "",
+                                        c = 0,
+                                        f = b.length;
+                                        for (a = 0; a < f; a++)
+                                                c += parseInt(b[a]), d += "<i>" + b[a] + "</i>";
+
+                                  if (6 > gameid || 13==gameid || gameid == 14) {
+                                                if (gameid == 1 || gameid == 14) {
+                                                        c = parseInt(b[3])*10  + parseInt(b[4]);
+                                                } else if (gameid == 4 || gameid == 5 || gameid == 13) {
+                                                        c = parseInt(b[1])*10  + parseInt(b[2]);
+                                                } else if (gameid == 2 || gameid == 3) {
+                                                        c = parseInt(b[6])*10  + parseInt(b[7]);
+                                                }
+                                                c = 0 == c % 4 ? 4 : c % 4;
+                                                $(".haoma_box ul").append('<li class="fan">' + e.qishu + " "+__('period')+" <span>" + d + "<em>" + c + __('fan_unit')+"</em></span></li>")
+                                                $('.val_box').show();
+                                                $('.val_list').append('<i class="s'+c+'">'+c+'</i>');
+                                        } else if (7 == gameid)
+                                                b = parseInt(b[0]) > parseInt(b[f - 1]) ? __('dragon') : parseInt(b[0]) == parseInt(b[f - 1]) ? __('tie') : __('tiger'), $(".haoma_box ul").append("<li>" +
+                                                        e.qishu + " "+__('period')+" <span>" + d + "<em>" + c + "</em><em>" + (22 < c ? __('big') : __('small')) + "</em><em>" + b + "</em></span></li>");
+                                        else if (9 == gameid || 10 == gameid)
+                                                $(".haoma_box ul").append("<li>" + e.qishu + " "+__('period')+" <span>" + d + "<em>" + c + "</em><em>" + (13 < c ? __('big') : __('small')) + "</em><em>" + (0 == c % 2 ? __('even') : __('odd')) + "</em></span></li>");
+                                        else if (12 == gameid) {
+                                                c = parseInt(b[0] + b[1]);
+                                                if (0 == c || 50 == c)
+                                                        c = parseInt(b[2] + b[3]);
+                                                50 < c && (c -= 50);
+                                                $(".haoma_box ul").append("<li>" + e.qishu + " "+__('period')+" <span>" + d + "<em>" + c + "</em><em>" + (49 == c ? __('tie') : 24 < c ? __('big') :
+                                                                __('small')) + "</em><em>" + (49 == c ? __('tie') : 0 == c % 2 ? __('even') : __('odd')) + "</em></span></li>")
+                                        } else
+                                                $(".haoma_box ul").append("<li>" + e.qishu + " "+__('period')+" <span>" + d + "</span></li>")
+                                })
+                        },
+                        error: function () {
+                                console.log("ERR")
+                        }
+                })
+        },
+        y = function (a) {
+                getchat && $.ajax({
+                        url: "?a=ajax_chat_order&gameid=" + gameid,
+                        data: {
+                                id: u,
+                                qishu: nextqishu
+                        },
+                        type: "POST",
+                        dataType: "json",
+                        success: function (a) {
+                                "n" == a.err && (0 != a.id ? (u = a.id, $.each(a.order, function (a, b) {
+                                                        a = b.wanfa.split("@");
+                                                        var c = "statics/images/userpic.png";
+                                                        b.user.pic && (c = /^\d+$/.test(b.user.pic) &&
+                                                                        0 < b.user.pic ? "statics/images/pic/" + b.user.pic + ".jpg" : "uppic/user/" + b.user.pic);
+                                                        b = "<li><h5>" + getLocalTime(parseInt(b.addtime), "hh:mm:ss") + '</h5><img src="' + c + '" alt="' + b.addtime + '"/><h4>' + (b.user.nickname ? b.user.nickname : hiddenStr(b.user.username, 2, 2)) + '</h4><div class="msg"><span class="qishu">' + nextqishu + __('period')+'</span><span class="money"><?php echo $this -> setting['stamp']?>' + Gsnum(b.money) + '</span><span class="wanfa">' + translateWanfa(b.wanfa) + "</span></div></li>";
+                                                        k(b)
+                                                })) : (a = Date.parse(new Date),
+                                                D(a)))
+                        },
+                        error: function () {
+                                console.log("ERR")
+                        }
+                });
+                var c = Date.parse(new Date);
+                a = Math.floor(10 * Math.random()) + 1;
+                clearTimeout(t);
+                t = setTimeout(function () {
+                                y(c)
+                        }, 1E3 * a)
+        },
+        D = function (a) {
+                if (getchat)
+                {
+                        a = [, "1\u5ff52 2\u5ff53 3\u5ff54 4\u5ff51 1\u5ff54 2\u5ff51 3\u5ff52 4\u5ff53 1-2\u89d2 2-3\u89d2 3-4\u89d2 4-1\u89d2 \u6b631 \u6b632 \u6b633 \u6b634 \u756a1 \u756a2 \u756a3 \u756a4 \u5355 \u53cc".split(" ")];
+                        a[2] = a[1];
+                        a[3] = a[1];
+                        a[4] = a[1];
+                        a[5] = a[1];
+                        a[6] = "\u51a0\u4e9a\u5927@\u51a0\u4e9a \u51a0\u4e9a\u5c0f@\u51a0\u4e9a \u51a0\u4e9a\u5355@\u51a0\u4e9a \u51a0\u4e9a\u53cc@\u51a0\u4e9a 3@\u51a0\u4e9a 4@\u51a0\u4e9a 5@\u51a0\u4e9a 6@\u51a0\u4e9a 7@\u51a0\u4e9a 8@\u51a0\u4e9a 9@\u51a0\u4e9a 10@\u51a0\u4e9a 11@\u51a0\u4e9a 12@\u51a0\u4e9a 13@\u51a0\u4e9a 14@\u51a0\u4e9a 15@\u51a0\u4e9a 16@\u51a0\u4e9a 17@\u51a0\u4e9a 18@\u51a0\u4e9a 19@\u51a0\u4e9a \u5927@\u51a0\u519b \u5c0f@\u51a0\u519b \u5355@\u51a0\u519b \u53cc@\u51a0\u519b \u9f99@\u51a0\u519b \u864e@\u51a0\u519b \u5927@\u4e9a\u519b \u5c0f@\u4e9a\u519b \u5355@\u4e9a\u519b \u53cc@\u4e9a\u519b \u9f99@\u4e9a\u519b \u864e@\u4e9a\u519b \u5927@\u7b2c\u4e09\u540d \u5c0f@\u7b2c\u4e09\u540d \u5355@\u7b2c\u4e09\u540d \u53cc@\u7b2c\u4e09\u540d \u9f99@\u7b2c\u4e09\u540d \u864e@\u7b2c\u4e09\u540d \u5927@\u7b2c\u56db\u540d \u5c0f@\u7b2c\u56db\u540d \u5355@\u7b2c\u56db\u540d \u53cc@\u7b2c\u56db\u540d \u9f99@\u7b2c\u56db\u540d \u864e@\u7b2c\u56db\u540d \u5927@\u7b2c\u4e94\u540d \u5c0f@\u7b2c\u4e94\u540d \u5355@\u7b2c\u4e94\u540d \u53cc@\u7b2c\u4e94\u540d \u9f99@\u7b2c\u4e94\u540d \u864e@\u7b2c\u4e94\u540d \u5927@\u7b2c\u516d\u540d \u5c0f@\u7b2c\u516d\u540d \u5355@\u7b2c\u516d\u540d \u53cc@\u7b2c\u516d\u540d \u5927@\u7b2c\u4e03\u540d \u5c0f@\u7b2c\u4e03\u540d \u5355@\u7b2c\u4e03\u540d \u53cc@\u7b2c\u4e03\u540d \u5927@\u7b2c\u516b\u540d \u5c0f@\u7b2c\u516b\u540d \u5355@\u7b2c\u516b\u540d \u53cc@\u7b2c\u516b\u540d \u5927@\u7b2c\u4e5d\u540d \u5c0f@\u7b2c\u4e5d\u540d \u5355@\u7b2c\u4e5d\u540d \u53cc@\u7b2c\u4e5d\u540d \u5927@\u7b2c\u5341\u540d \u5c0f@\u7b2c\u5341\u540d \u5355@\u7b2c\u5341\u540d \u53cc@\u7b2c\u5341\u540d 1@\u51a0\u519b 2@\u51a0\u519b 3@\u51a0\u519b 4@\u51a0\u519b 5@\u51a0\u519b 6@\u51a0\u519b 7@\u51a0\u519b 8@\u51a0\u519b 9@\u51a0\u519b 10@\u51a0\u519b 1@\u4e9a\u519b 2@\u4e9a\u519b 3@\u4e9a\u519b 4@\u4e9a\u519b 5@\u4e9a\u519b 6@\u4e9a\u519b 7@\u4e9a\u519b 8@\u4e9a\u519b 9@\u4e9a\u519b 10@\u4e9a\u519b 1@\u7b2c\u4e09\u540d 2@\u7b2c\u4e09\u540d 3@\u7b2c\u4e09\u540d 4@\u7b2c\u4e09\u540d 5@\u7b2c\u4e09\u540d 6@\u7b2c\u4e09\u540d 7@\u7b2c\u4e09\u540d 8@\u7b2c\u4e09\u540d 9@\u7b2c\u4e09\u540d 10@\u7b2c\u4e09\u540d 1@\u7b2c\u56db\u540d 2@\u7b2c\u56db\u540d 3@\u7b2c\u56db\u540d 4@\u7b2c\u56db\u540d 5@\u7b2c\u56db\u540d 6@\u7b2c\u56db\u540d 7@\u7b2c\u56db\u540d 8@\u7b2c\u56db\u540d 9@\u7b2c\u56db\u540d 10@\u7b2c\u56db\u540d 1@\u7b2c\u4e94\u540d 2@\u7b2c\u4e94\u540d 3@\u7b2c\u4e94\u540d 4@\u7b2c\u4e94\u540d 5@\u7b2c\u4e94\u540d 6@\u7b2c\u4e94\u540d 7@\u7b2c\u4e94\u540d 8@\u7b2c\u4e94\u540d 9@\u7b2c\u4e94\u540d 10@\u7b2c\u4e94\u540d 1@\u7b2c\u516d\u540d 2@\u7b2c\u516d\u540d 3@\u7b2c\u516d\u540d 4@\u7b2c\u516d\u540d 5@\u7b2c\u516d\u540d 6@\u7b2c\u516d\u540d 7@\u7b2c\u516d\u540d 8@\u7b2c\u516d\u540d 9@\u7b2c\u516d\u540d 10@\u7b2c\u516d\u540d 1@\u7b2c\u4e03\u540d 2@\u7b2c\u4e03\u540d 3@\u7b2c\u4e03\u540d 4@\u7b2c\u4e03\u540d 5@\u7b2c\u4e03\u540d 6@\u7b2c\u4e03\u540d 7@\u7b2c\u4e03\u540d 8@\u7b2c\u4e03\u540d 9@\u7b2c\u4e03\u540d 10@\u7b2c\u4e03\u540d 1@\u7b2c\u516b\u540d 2@\u7b2c\u516b\u540d 3@\u7b2c\u516b\u540d 4@\u7b2c\u516b\u540d 5@\u7b2c\u516b\u540d 6@\u7b2c\u516b\u540d 7@\u7b2c\u516b\u540d 8@\u7b2c\u516b\u540d 9@\u7b2c\u516b\u540d 10@\u7b2c\u516b\u540d 1@\u7b2c\u4e5d\u540d 2@\u7b2c\u4e5d\u540d 3@\u7b2c\u4e5d\u540d 4@\u7b2c\u4e5d\u540d 5@\u7b2c\u4e5d\u540d 6@\u7b2c\u4e5d\u540d 7@\u7b2c\u4e5d\u540d 8@\u7b2c\u4e5d\u540d 9@\u7b2c\u4e5d\u540d 10@\u7b2c\u4e5d\u540d 1@\u7b2c\u5341\u540d 2@\u7b2c\u5341\u540d 3@\u7b2c\u5341\u540d 4@\u7b2c\u5341\u540d 5@\u7b2c\u5341\u540d 6@\u7b2c\u5341\u540d 7@\u7b2c\u5341\u540d 8@\u7b2c\u5341\u540d 9@\u7b2c\u5341\u540d 10@\u7b2c\u5341\u540d".split(" ");
+                        a[7] = "\u603b\u548c\u5927@\u603b\u548c \u603b\u548c\u5c0f@\u603b\u548c \u603b\u548c\u5355@\u603b\u548c \u603b\u548c\u53cc@\u603b\u548c \u9f99@\u603b\u548c \u864e@\u603b\u548c \u548c@\u603b\u548c \u5927@\u7b2c\u4e00\u7403 \u5c0f@\u7b2c\u4e00\u7403 \u5355@\u7b2c\u4e00\u7403 \u53cc@\u7b2c\u4e00\u7403 \u5927@\u7b2c\u4e8c\u7403 \u5c0f@\u7b2c\u4e8c\u7403 \u5355@\u7b2c\u4e8c\u7403 \u53cc@\u7b2c\u4e8c\u7403 \u5927@\u7b2c\u4e09\u7403 \u5c0f@\u7b2c\u4e09\u7403 \u5355@\u7b2c\u4e09\u7403 \u53cc@\u7b2c\u4e09\u7403 \u5927@\u7b2c\u56db\u7403 \u5c0f@\u7b2c\u56db\u7403 \u5355@\u7b2c\u56db\u7403 \u53cc@\u7b2c\u56db\u7403 \u5927@\u7b2c\u4e94\u7403 \u5c0f@\u7b2c\u4e94\u7403 \u5355@\u7b2c\u4e94\u7403 \u53cc@\u7b2c\u4e94\u7403 0@\u7b2c\u4e00\u7403 1@\u7b2c\u4e00\u7403 2@\u7b2c\u4e00\u7403 3@\u7b2c\u4e00\u7403 4@\u7b2c\u4e00\u7403 5@\u7b2c\u4e00\u7403 6@\u7b2c\u4e00\u7403 7@\u7b2c\u4e00\u7403 8@\u7b2c\u4e00\u7403 9@\u7b2c\u4e00\u7403 0@\u7b2c\u4e8c\u7403 1@\u7b2c\u4e8c\u7403 2@\u7b2c\u4e8c\u7403 3@\u7b2c\u4e8c\u7403 4@\u7b2c\u4e8c\u7403 5@\u7b2c\u4e8c\u7403 6@\u7b2c\u4e8c\u7403 7@\u7b2c\u4e8c\u7403 8@\u7b2c\u4e8c\u7403 9@\u7b2c\u4e8c\u7403 0@\u7b2c\u4e09\u7403 1@\u7b2c\u4e09\u7403 2@\u7b2c\u4e09\u7403 3@\u7b2c\u4e09\u7403 4@\u7b2c\u4e09\u7403 5@\u7b2c\u4e09\u7403 6@\u7b2c\u4e09\u7403 7@\u7b2c\u4e09\u7403 8@\u7b2c\u4e09\u7403 9@\u7b2c\u4e09\u7403 0@\u7b2c\u56db\u7403 1@\u7b2c\u56db\u7403 2@\u7b2c\u56db\u7403 3@\u7b2c\u56db\u7403 4@\u7b2c\u56db\u7403 5@\u7b2c\u56db\u7403 6@\u7b2c\u56db\u7403 7@\u7b2c\u56db\u7403 8@\u7b2c\u56db\u7403 9@\u7b2c\u56db\u7403 0@\u7b2c\u4e94\u7403 1@\u7b2c\u4e94\u7403 2@\u7b2c\u4e94\u7403 3@\u7b2c\u4e94\u7403 4@\u7b2c\u4e94\u7403 5@\u7b2c\u4e94\u7403 6@\u7b2c\u4e94\u7403 7@\u7b2c\u4e94\u7403 8@\u7b2c\u4e94\u7403 9@\u7b2c\u4e94\u7403 \u8c79\u5b50@\u524d\u4e09 \u987a\u5b50@\u524d\u4e09 \u5bf9\u5b50@\u524d\u4e09 \u534a\u987a@\u524d\u4e09 \u6742\u516d@\u524d\u4e09 \u8c79\u5b50@\u4e2d\u4e09 \u987a\u5b50@\u4e2d\u4e09 \u5bf9\u5b50@\u4e2d\u4e09 \u534a\u987a@\u4e2d\u4e09 \u6742\u516d@\u4e2d\u4e09 \u8c79\u5b50@\u540e\u4e09 \u987a\u5b50@\u540e\u4e09 \u5bf9\u5b50@\u540e\u4e09 \u534a\u987a@\u540e\u4e09 \u6742\u516d@\u540e\u4e09".split(" ");
+                        a[8] = [];
+                        a[9] = "\u5927 \u5c0f \u5355 \u53cc \u5927\u5355 \u5927\u53cc \u5c0f\u5355 \u5c0f\u53cc \u6781\u5927 \u6781\u5c0f \u8c79\u5b50 \u7ea2\u6ce2 \u7eff\u6ce2 \u84dd\u6ce2 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25".split(" ");
+                        a[10] = a[9];
+                        a[11] = [];
+                        a[12] = "\u5927 \u5c0f \u5355 \u53cc \u5927\u5355 \u5927\u53cc \u5c0f\u5355 \u5c0f\u53cc \u5bb6\u79bd \u91ce\u517d \u5408\u6570\u5927 \u5408\u6570\u5c0f \u5408\u6570\u5355 \u5408\u6570\u53cc \u7ea2\u6ce2 \u7eff\u6ce2 \u84dd\u6ce2 \u7ea2\u5927 \u7ea2\u5c0f \u7ea2\u5355 \u7ea2\u53cc \u84dd\u5927 \u84dd\u5c0f \u84dd\u5355 \u84dd\u53cc \u7eff\u5927 \u7eff\u5c0f \u7eff\u5355 \u7eff\u53cc 0\u5934 1\u5934 2\u5934 3\u5934 4\u5934 0\u5c3e 1\u5c3e 2\u5c3e 3\u5c3e 4\u5c3e 5\u5c3e 6\u5c3e 7\u5c3e 8\u5c3e 9\u5c3e \u725b \u9e21 \u7f8a \u732a \u72d7 \u9a6c \u86c7 \u9f20 \u864e \u5154 \u9f99 \u7334 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49".split(" ");
+                        a[13] = a[1];
+                        a[14] = a[1];
+                        var c = [10, 20, 30, 40, 50, 55, 60, 66, 70, 80, 88, 99, 100, 111, 123, 150, 160, 166, 180, 200, 211, 212, 230, 240, 241, 280, 290, 300, 310, 320, 330, 340, 370, 380, 420, 460, 500, 560, 566, 580, 585, 590, 600, 616, 650, 710, 760, 770, 780, 799, 808, 810, 818, 820, 850, 919, 923, 930, 1E3, 1023, 1160, 1200, 1211, 1212, 1480, 1500, 1510, 2E3, 2100, 2110, 2120, 2280, 2500, 3212, 3500, 5E3, 6E3];
+                        a = a[gameid][Math.floor(Math.random() * a[gameid].length)];
+                        c = Gsnum(c[Math.floor(Math.random() * c.length)]);
+                        var d = Date.parse(new Date) / 1E3;
+                        d = getLocalTime(d, "hh:mm:ss");
+                        var e = "statics/images/userpic.png",
+                        b = Math.ceil(225 * Math.random());
+                        25 < b ? e = "statics/images/autopic/" + b + ".jpg" : 0 < b && (e = "statics/images/pic/" + b + ".jpg");
+                        a = "<li><h5>" + d + '</h5><img src="' + e + '"/><h4>' + hiddenStr(randomStr(), 2, 2) + '</h4><div class="msg"><span class="qishu">' + nextqishu + __('period')+'</span><span class="money"><?php echo $this -> setting['stamp']?>' + c + '</span><span class="wanfa">' + translateWanfa(a) + "</span></div></li>";
+                        k(a)
+                }
+        },
+        k = function (a) {
+                $(".chat_box ul").append(a);
+                $(".chat_box").animate({
+                        scrollTop: $(".chat_box")[0].scrollHeight
+                }, 300);
+                50 < $(".chat_box ul li").length &&
+                $(".chat_box ul li").eq(0).detach()
+        };
+        v(0, 0);
+        uid && setInterval(function () {
+                var a = Date.parse(new Date);
+                z(a)
+        }, 1E4);
+        $(window).resize(function () {
+                var a = $(window).height();
+                $(".scroll_box").css({
+                        height: a - 98
+                });
+                if (6 > gameid || 13==gameid || gameid == 14) {
+                        $(".chat_box, .game_box, .game_box_shade").css({
+                                height: a - 243
+                        });
+                        var c = $(".game_box").width();
+                        a = (c - 6) / 5;
+                        c = c - 2 * a - 126 - 3;
+                        $(".game .line_1.df a, .game .line_2.df a, .game .line_6.df a, .game .line_7.df a").css({
+                                width: a
+                        });
+                        $(".game .line_4").css({
+                                width: c
+                        });
+                        $(".game .line_4 a").css({
+                                width: c - 1
+                        })
+                } else {
+                        $(".chat_box, .game_box, .game_box_shade").css({
+                                height: a - 219
+                        });
+                }
+        }).resize();
+        $("a.game_btn").click(function () {
+                $(this).hasClass("a") ? ($(this).removeClass("a"), $(".main .game_box").stop().slideUp(300), $(".main .chat_box").stop().slideDown(300), $(this).text(__("bet"))) : ($(this).addClass("a"), $(".main .game_box").stop().slideDown(300), $(".main .chat_box").stop().slideUp(300), $(this).text(__("go_back")))
+        });
+        $(".lottery_next a.more").click(function () {
+                $(this).hasClass("a") ? ($(this).removeClass("a"), $(".haoma_box").slideUp()) : ($(this).addClass("a"), $(".haoma_box").stop().slideDown())
+        });
+        $(".fast_li a").click(function () {
+                var a = $(this).text();
+                $("input#money").val(a)
+        });
+        $(".games .title a").click(function () {
+                $(this).addClass("a").siblings().removeClass("a");
+                $(".line_box .line").eq($(this).index()).addClass("a").siblings().removeClass("a");
+                $(".game_box").animate({
+                        scrollTop: 0
+                }, 300)
+        });
+        $("#game a").click(function () {
+                if(6 > gameid || gameid == 13 || gameid == 14|| is_one){
+                 ($("#game a").removeClass("a"), $(this).addClass("a"))
+                }else{
+                  $(this).hasClass("a") ? $(this).removeClass("a") : $(this).addClass("a");
+                }
+                var a = $("#game a.a").length;
+                a = 0 == a ? __('select_bet_hint') :
+                        __('already_selected') + a + __('selected_methods');
+                $(".send_box h5").text(a);
+                $(".send_box").stop().slideDown(300)
+        });
+        $("a.cancel").click(function () {
+                $("input#money").val("");
+                $("#game a").removeClass("a");
+                $(".send_box h5").text(__("select_bet_hint"));
+                $(".send_box").stop().slideUp(300)
+        });
+        $("a.hide").click(function () {
+                $(".send_box").stop().slideUp(300)
+        });
+        $("a#send").click(function () {
+                if (0 == nextqishu)
+                        return layer.alert(__('no_period_yet'), {
+                                icon: 0
+                        }),
+                        !1;
+                var a = $("#game a.a");
+                if (1 > a.length)
+                        return layer.alert(__('please_select_method'), {
+                                icon: 0
+                        }), !1;
+                var c = Gsnum($("input#money").val()),
+                d = [],
+                e = "";
+                is_one && (e = send_money = a.attr("sum"));
+                d = send_money.split("-");
+                if (c < d[0] || c > d[1])
+                        return layer.alert(__('bet_amount_range')+send_money, {
+                                icon: 0
+                        }), !1;
+                var b = "",
+                f = 0;
+                $(a).each(function () {
+                        var a = $(this).attr("data_type");
+                        b && (b += "|");
+                        b += $(this).attr("data") + "@" + $(this).find("i").text() + "@" + $(this).find("em").text() + (a ? "@" + a : "");
+                        f += c
+                });
+                var g =
+                        $("input#ban").val();
+                layer.confirm($(".send_box h5").text() + __("total_amount_label") + f, {
+                        btn: [__("confirm_bet"), __("cancel")]
+                }, function () {
+                        var a = layer.load(1);
+                        $.ajax({
+                                url: "?a=ajax_touzhu",
+                                data: {
+                                        gameid: gameid,
+                                        gamename: gamename,
+                                        qishu: nextqishu,
+                                        wanfa: b,
+                                        money: c,
+                                        sum: e,
+                                        ban: g,
+                                        dosubmit: "yes"
+                                },
+                                type: "POST",
+                                dataType: "json",
+                                cache: !1,
+                                success: function (b) {
+                                        layer.close(a);
+                                        "y" == b.status ? (layer.msg(b.info, {
+                                                        icon: 1
+                                                }), b = Date.parse(new Date), z(b)) : "y" == b.login ? layer.confirm(b.info, {
+                                                btn: [__("go_to_login"),
+                                                        __("cancel")]
+                                        }, function () {
+                                                location.href = "?a=login"
+                                        }, function () {}) : layer.msg(b.info, {
+                                                icon: 0
+                                        })
+                                },
+                                error: function () {
+                                        layer.close(a);
+                                        layer.alert(__('server_request_failed'), {
+                                                icon: 0
+                                        })
+                                }
+                        })
+                }, function () {})
+        })
+});
+</script >
+<?php include template("footer"); ?>

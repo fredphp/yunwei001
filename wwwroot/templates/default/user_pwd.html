@@ -1,0 +1,99 @@
+<?php include template("header"); ?>
+<div class="main">
+        <div class="header">
+                <a class="back" href="?a=user" title="返回"><i class="iconfont icon-fanhui"></i></a>
+                <a class="home" href="?a=init" title="首页"><i class="iconfont icon-home"></i></a>
+                <h4><?php echo $headername?></h4>
+        </div>
+        <div class="scroll_box">
+                <div class="user_box">
+                        <form action="?a=user_pwd" method="post" id="send_form" onsubmit="return false;">
+                                <input type="hidden" name="dosubmit" id="dosubmit" value="yes" />
+                                <div class="form_div">
+                                        <ul>
+                                                <li>
+                                                        <input class="inputxt" type="password" id="oldpassword" name="oldpassword" value="" placeholder="<?php echo L('old_password')?>" />
+                                                        <b class="tp-btn btn-off"></b>
+                                                </li>
+                                                <li>
+                                                        <input class="inputxt" type="password" id="newpassword" name="newpassword" value="" placeholder="<?php echo L('new_password')?>" />
+                                                        <b class="tp-btn btn-off"></b>
+                                                </li>
+                                                <li class="password_two">
+                                                        <input class="inputxt" type="password" id="confirmpassword" name="confirmpassword" value="" placeholder="<?php echo L('confirm_password')?>" />
+                                                        <b class="tp-btn btn-off"></b>
+                                                </li>
+                                                <li>
+                                                        <input class="inputxt yzm" type="text" id="code" name="code" value="" placeholder="<?php echo L('captcha')?>" />
+                                                        <span class="code"><?php echo form::checkcode('code_img', '4', '14', 84, 34, '' , '', '#FFFFFF', true)?></span>
+                                                </li>
+                                        </ul>
+                                </div>
+                                <div class="submit"><input type="submit" id="submit" name="submit" value="<?php echo L('save')?>"></div>
+                        </form>
+                </div>
+        </div>
+</div>
+<script type="text/javascript" src="<?php echo JS_PATH?>Validform_v5.3.2.js"></script>
+<script type="text/javascript">
+$(function(){
+        var Vform = $("#send_form").Validform();
+        Vform.config({
+                tiptype:1,
+                ajaxPost:true,
+                callback:function(data){
+                        if(data.status == 'y'){
+                                Vform.resetForm();//初始化表单
+                                setTimeout(function(){//2秒后刷新
+                                        top.location.href = '?a=logout';
+                                }, 2000);
+                        } else {
+                                Vform.resetForm();//初始化表单
+                                $('#code_img').click();
+                        }
+                }
+        });
+        Vform.addRule([
+                {
+                        ele:'#oldpassword',
+                        datatype:'s6-20',
+                        nullmsg:'<?php echo L('enter_old_password')?>',
+                        errormsg:'<?php echo L('password_length_limit')?>'
+                },
+                {
+                        ele:'#newpassword',
+                        datatype:'s6-20',
+                        nullmsg:'<?php echo L('enter_new_password')?>',
+                        errormsg:'<?php echo L('password_length_limit')?>'
+                },
+                {
+                        ele:'#confirmpassword',
+                        datatype:'s6-20',
+                        recheck:"newpassword",
+                        nullmsg:'<?php echo L('confirm_new_password')?>',
+                        errormsg:'<?php echo L('password_mismatch')?>'
+                },
+                {
+                        ele:'#code',
+                        datatype:'s4-4',
+                        nullmsg:'<?php echo L('enter_captcha')?>',
+                        errormsg:'<?php echo L('captcha_4_digits')?>'
+                }
+        ]);
+        $('.btn-off').on('click',function() {
+                if ($(this).hasClass('btn-on')) {
+                        $(this).removeClass('btn-on');
+                        $(this).prev()[0].type = 'password';
+                } else {
+                        $(this).addClass('btn-on');
+                        $(this).prev()[0].type = 'text';
+                }
+        });
+        //自动调整窗口
+        $(window).resize(function() {
+                var h = $(window).height();
+                $('.scroll_box').css({'height':h-49});
+        }).resize();
+});
+</script>
+<?php include template("footer"); ?>
