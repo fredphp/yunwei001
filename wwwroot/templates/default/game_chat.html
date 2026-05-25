@@ -130,6 +130,10 @@
                         .scroll_box > .lottery_next.pk10_lottery_next a.more.a {
                                 top: 12px;
                         }
+                        /* PK10: 取消封盘遮罩层，避免遮挡投注按钮 */
+                        .game_box_shade {
+                                display: none !important;
+                        }
                 </style>
                 <div class="dh_box">
                         <iframe frameborder="0" src="games/BJSC/index.html?lang=<?php echo defined('ROUTE_LANG') ? ROUTE_LANG : 'zh-cn'?>" width="100%" height="100%" scrolling="no" allowTransparency="true"></iframe>
