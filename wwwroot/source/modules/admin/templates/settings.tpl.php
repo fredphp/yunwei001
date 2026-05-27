@@ -7,7 +7,8 @@ include $this->admin_tpl('header');
         <div class="content-menu">
                 <a id="menu-1" href="javascript:;" onclick="menuswitch('1');" class="on"><em>SEO设置</em></a><span>|</span>
                 <a id="menu-2" href="javascript:;" onclick="menuswitch('2');"><em>基本设置</em></a><span>|</span>
-                <a id="menu-3" href="javascript:;" onclick="menuswitch('3');"><em>财务设置</em></a>
+                <a id="menu-3" href="javascript:;" onclick="menuswitch('3');"><em>财务设置</em></a><span>|</span>
+                <a id="menu-4" href="javascript:;" onclick="menuswitch('4');"><em>代理管理</em></a>
         </div>
 </div>
 <div class="content-t">
@@ -37,12 +38,12 @@ include $this->admin_tpl('header');
                                                 <th>网站访问地址：</th>
                                                 <td>
                                                         <input class="input-text" type="text" name="setting[weburl]" value="<?php echo $weburl;?>">
-                                                        <span>以“http://”开始，“/”结尾的网站访问地址</span>
+                                                        <span>以"http://"开始，"/"结尾的网站访问地址</span>
                                                 </td>
                                         </tr>
                                         <tr>
                                                 <th>网站关键字：</th>
-                                                <td><input class="input-text" type="text" name="setting[keywords]" style="width: 500px;" value="<?php echo $keywords;?>"><span>多个用“,”分开</span></td>
+                                                <td><input class="input-text" type="text" name="setting[keywords]" style="width: 500px;" value="<?php echo $keywords;?>"><span>多个用","分开</span></td>
                                         </tr>
                                         <tr>
                                                 <th>网站关键字(English)：</th>
@@ -104,7 +105,7 @@ include $this->admin_tpl('header');
                                                 <th>客服QQ：</th>
                                                 <td>
                                                         <input class="input-text" type="text" name="setting[qq]" style="width: 500px;" value="<?php echo $qq;?>">
-                                                        <p>多个QQ用“|”分开，显示名称和QQ用“@”分开，如：售前咨询@8888888|售后咨询@6666666</p>
+                                                        <p>多个QQ用"|"分开，显示名称和QQ用"@"分开，如：售前咨询@8888888|售后咨询@6666666</p>
                                                 </td>
                                         </tr>
                                         <tr>
@@ -164,7 +165,7 @@ include $this->admin_tpl('header');
                                                 <th>禁用关键词：</th>
                                                 <td>
                                                         <input class="input-text" type="text" name="setting[userfilter]" style="width: 500px;" value="<?php echo $userfilter;?>">
-                                                        <span>多个关键字用用半角逗号“,”分开，包含关键词的用户名或者昵称禁止使用</span>
+                                                        <span>多个关键字用用半角逗号","分开，包含关键词的用户名或者昵称禁止使用</span>
                                                 </td>
                                         </tr>
                                         <tr>
@@ -288,8 +289,8 @@ include $this->admin_tpl('header');
                         </tr>
                                 </tbody>
                         </table>
-                        <div class="mt20"></div>
-                        <h3 class="title-1" style="padding:10px 0;">代理管理</h3>
+                </div>
+                <div id="content-4" style="display:none;">
                         <table width="100%" cellspacing="0" class="table_form" id="agent_table">
                                 <thead>
                                         <tr>
