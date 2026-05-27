@@ -840,7 +840,7 @@ class index extends go {
                         $kefu_url = $this -> setting['kefu_url'];
                         // ★ 自动追加当前语言参数到客服链接（如 &lang=my-mm）
                         $current_lang = defined('ROUTE_LANG') ? ROUTE_LANG : 'zh-cn';
-                        if ($current_lang && $current_lang != 'zh-cn') {
+                        if ($current_lang) {
                                 $kefu_url .= (strpos($kefu_url, '?') !== false ? '&' : '?') . 'lang=' . urlencode($current_lang);
                         }
                         $kefu_available = true;
