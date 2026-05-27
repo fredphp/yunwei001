@@ -9,7 +9,22 @@ class user extends admin {
 		$this -> db = base :: load_model('user_model');
 		$this -> db2 = base :: load_model('order_model');
 		$this -> lock = array(0 => '否', 1 => '<span style="color: #F00;">是</span>');
-		$this -> daili = array(0 => '否', 1 => '<span style="color: #F00;">一级</span>', 2 => '<span style="color: #F00;">二级</span>', 3 => '<span style="color: #F00;">二级(阅)</span>');
+		$this -> daili = array(0 => '否', 1 => '<span style="color: #F00;">代理</span>');
+	}
+
+	// ★ 获取代理列表（供模板使用）
+	private function get_agent_list() {
+		$agent_db = base :: load_model('agent_model');
+		$list = $agent_db -> select("state = 1", 'id,name,rebate', '', 'id ASC');
+		return $list ? $list : array();
+	}
+
+	// ★ 获取代理名称（根据agent_id）
+	private function get_agent_name($agent_id) {
+		if (!$agent_id) return '--';
+		$agent_db = base :: load_model('agent_model');
+		$agent = $agent_db -> get_one(array('id' => $agent_id));
+		return $agent ? $agent['name'] : '--';
 	}
 
 	public function init() {
@@ -77,18 +92,24 @@ class user extends admin {
 				showmessage('密码限制为6-20个字符！', HTTP_REFERER);
 			}
 			$aid = intval($_POST['aid']);
-			$agent = intval($_POST['agent']);
-			if (($aid == 2 || $aid == 3) && $agent < 1) {
-				showmessage('为二级代理时，上级代理人UID必填！', HTTP_REFERER);
-			}
-			if ($aid != 1) {
-				$insert['agent'] = $agent;
-			}
-			if ($aid == 0 && $agent > 0) {//添加普通账户并且填写了上级代理
-				$agent_db = $this -> db -> get_one(array('uid' => $agent));
-				if ($agent_db['aid'] == 3) {//检查上级为二级代理(阅)
-					$insert['agents'] = $agent_db['agent'];
+			$agent_id = intval($_POST['agent_id']);
+			// ★ 如果选择了代理
+			if ($aid == 1 && $agent_id > 0) {
+				$insert['agent_id'] = $agent_id;
+				// 查找该代理配置对应的用户UID（agent表的id不是uid，需要查找关联用户）
+				// 代理用户关联：agent_id存在user表的agent_id字段，需要找到第一个作为该代理的用户
+				$agent_db = base :: load_model('agent_model');
+				$agent_info = $agent_db -> get_one(array('id' => $agent_id));
+				if ($agent_info) {
+					// 找到关联该agent_id的代理用户作为上级
+					$agent_user = $this -> db -> get_one("agent_id = '$agent_id' AND aid = 1 AND uid != 0", 'uid', 'uid ASC');
+					if ($agent_user) {
+						$insert['agent'] = $agent_user['uid'];
+					}
 				}
+			} elseif ($aid == 0) {
+				$insert['agent_id'] = 0;
+				$insert['agent'] = 0;
 			}
 			list($password, $encrypt) = creat_password($pwd);
 			$insert['username'] = $username;
@@ -103,6 +124,8 @@ class user extends admin {
 				showmessage('操作失败！', HTTP_REFERER);
 			}
 		}
+		// ★ 获取代理列表
+		$agent_list = $this -> get_agent_list();
 		include $this -> admin_tpl('user_add');
 	}
 
@@ -121,22 +144,26 @@ class user extends admin {
 					$update['encrypt'] = $encrypt;
 				}
 				$aid = intval($_POST['aid']);
-				$agent = intval($_POST['agent']);
-				if (($aid == 2 || $aid == 3) && $agent < 1) {
-					showmessage('为二级代理时，上级代理人UID必填！', HTTP_REFERER);
-				}
-				if ($aid != 1) {
-					$update['agent'] = $agent;
-				} else {
-					$update['agent'] = 0;
-				}
-				if ($aid == 0 && $agent > 0) {//添加普通账户并且填写了上级代理
-					$agent_db = $this -> db -> get_one(array('uid' => $agent));
-					if ($agent_db['aid'] == 3) {//检查上级为二级代理(阅)
-						$update['agents'] = $agent_db['agent'];
+				$agent_id = intval($_POST['agent_id']);
+				// ★ 处理代理关系
+				if ($aid == 1 && $agent_id > 0) {
+					$update['agent_id'] = $agent_id;
+					$update['aid'] = 1;
+					// 查找该代理配置对应的代理用户UID
+					$agent_db = base :: load_model('agent_model');
+					$agent_info = $agent_db -> get_one(array('id' => $agent_id));
+					if ($agent_info) {
+						$agent_user = $this -> db -> get_one("agent_id = '$agent_id' AND aid = 1 AND uid != '$uid'", 'uid', 'uid ASC');
+						if ($agent_user) {
+							$update['agent'] = $agent_user['uid'];
+						}
 					}
+				} else {
+					$update['agent_id'] = 0;
+					$update['aid'] = 0;
+					$update['agent'] = 0;
+					$update['agents'] = 0;
 				}
-				$update['aid'] = $aid;
 				$update['lock'] = intval($_POST['lock']);
 				$update['nickname'] = safe_replace(trim($_POST['nickname']));
 				$update['email'] = safe_replace(trim($_POST['email']));
@@ -154,6 +181,8 @@ class user extends admin {
 					showmessage('修改失败！', HTTP_REFERER);
 				}
 			}
+			// ★ 获取代理列表
+			$agent_list = $this -> get_agent_list();
 			include $this -> admin_tpl('user_edit');
 		} else {
 			showmessage('未找到对应数据！', HTTP_REFERER);
@@ -209,7 +238,6 @@ class user extends admin {
 				$yesterday_where = "tui = 0 AND addtime >= '$starttime' AND addtime < '$endtime'$where";
 				$yesterday_count = $this -> go_order_count($yesterday_where);
 				//本周统计
-				//$starttime = mktime(0, 0 , 0, date('m'), date('d')-date('w')+1, date('Y'));//本周开始时间
 				$starttime = strtotime(date('Y-m-d', (time() - ((date('w') == 0 ? 7 : date('w')) - 1) * 24 * 3600)));//本周开始时间
 				$tswk_where = "tui = 0 AND addtime >= '$starttime'$where";
 				$tswk_count = $this -> go_order_count($tswk_where);
@@ -241,7 +269,6 @@ class user extends admin {
 					$daili_yesterday_where = "tui = 0 AND addtime >= '$starttime' AND addtime < '$endtime'$where";
 					$daili_yesterday_count = $this -> go_order_count($daili_yesterday_where);
 					//本周统计
-					//$starttime = mktime(0, 0 , 0, date('m'), date('d')-date('w')+1, date('Y'));//本周开始时间
 					$starttime = strtotime(date('Y-m-d', (time() - ((date('w') == 0 ? 7 : date('w')) - 1) * 24 * 3600)));//本周开始时间
 					$daili_tswk_where = "tui = 0 AND addtime >= '$starttime'$where";
 					$daili_tswk_count = $this -> go_order_count($daili_tswk_where);
@@ -287,6 +314,9 @@ class user extends admin {
 				$db3 -> delete(array('uid' => $uid));
 				$db4 -> delete(array('uid' => $uid));
 				$db5 -> delete(array('uid' => $uid));
+				// ★ 删除代理分成记录
+				$db6 = base :: load_model('agent_rebate_log_model');
+				$db6 -> delete(array('uid' => $uid));
 				echo json_encode(array('run' => 'yes', 'msg' => '删除成功！', 'id' => 'list_' . $uid));
 				exit();
 			} else {

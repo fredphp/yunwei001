@@ -101,24 +101,27 @@ include $this->admin_tpl('header');
 			<tr>
 				<th class="red">代理关系：</th>
 				<td>
-					以下代理关系，在存在下级数据的情况下只能升级，不能降级，否则代理层级关系将错乱
+					修改代理关系会影响分成计算，请谨慎操作
 				</td>
 			</tr>
 			<tr>
-				<th class="red">代理级别：</th>
+				<th class="red">代理：</th>
 				<td>
-					<label for="aid_1"><input type="radio" id="aid_1" name="aid" value="0" <?php if($data['aid'] == 0) echo 'checked="checked"';?> />普通账户</label>
-					<label for="aid_2"><input type="radio" id="aid_2" name="aid" value="1" <?php if($data['aid'] == 1) echo 'checked="checked"';?> />一级代理</label>
-					<label for="aid_3"><input type="radio" id="aid_3" name="aid" value="2" <?php if($data['aid'] == 2) echo 'checked="checked"';?> />二级代理</label>
-					<label for="aid_4"><input type="radio" id="aid_4" name="aid" value="3" <?php if($data['aid'] == 3) echo 'checked="checked"';?> />二级代理(阅)</label>
-					<span class="label">如果为二级代理，请在填写上级代理人UID</span>
+					<label for="aid_1"><input type="radio" id="aid_1" name="aid" value="0" <?php if($data['aid'] == 0) echo 'checked="checked"';?> onclick="$('#agent_select_tr').hide();" />普通账户</label>
+					<label for="aid_2"><input type="radio" id="aid_2" name="aid" value="1" <?php if($data['aid'] == 1) echo 'checked="checked"';?> onclick="$('#agent_select_tr').show();" />代理</label>
+					<span class="label">选择代理后将关联到对应代理配置</span>
 				</td>
 			</tr>
-			<tr>
-				<th class="red">上级代理人UID：</th>
+			<tr id="agent_select_tr" <?php if($data['aid'] != 1) echo 'style="display:none;"';?>>
+				<th class="red">选择代理：</th>
 				<td>
-					<input class="input-text" type="text" name="agent" value="<?php echo $data['agent']?>" id="agent" />
-					<span>指定上级代理人，普通账户或二级代理账户有效，为二级代理时必填</span>
+					<select name="agent_id" id="agent_id" class="input-text" style="width: 200px;">
+						<option value="0">-- 请选择代理 --</option>
+						<?php if(isset($agent_list) && is_array($agent_list)) { foreach($agent_list as $ag) { ?>
+						<option value="<?php echo $ag['id']?>" <?php if($data['agent_id'] == $ag['id']) echo 'selected="selected"';?> rebate="<?php echo $ag['rebate']?>"><?php echo htmlspecialchars($ag['name'])?> (分成:<?php echo $ag['rebate']?>%)</option>
+						<?php }} ?>
+					</select>
+					<span>代理列表来源于 通用设置 → 财务设置 → 代理管理</span>
 				</td>
 			</tr>
 		</table>

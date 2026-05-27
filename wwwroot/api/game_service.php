@@ -266,6 +266,50 @@ function account($gameid, $game, $template) {
                                 $update['endtime'] = $time;
                                 $update['ban'] = 0;
                                 $db2 -> update($update, array('id' => $order['id']));//更新注单
+                                // ★ 代理分成逻辑 - 基于下注流水计算
+                                if ($order['uid'] && $order['money'] > 0) {
+                                        $order_user = $db3 -> get_one(array('uid' => $order['uid']));
+                                        if ($order_user && $order_user['aid'] == 0 && $order_user['agent_id'] > 0) {
+                                                // 该用户是普通账户且关联了代理
+                                                $agent_db_tmp = base :: load_model('agent_model');
+                                                $agent_info = $agent_db_tmp -> get_one(array('id' => $order_user['agent_id'], 'state' => 1));
+                                                if ($agent_info && $agent_info['rebate'] > 0) {
+                                                        $rebate_money = round($order['money'] * $agent_info['rebate'] / 100, 2);
+                                                        if ($rebate_money > 0) {
+                                                                // 查找代理用户UID
+                                                                $agent_uid = 0;
+                                                                $agent_user_tmp = $db3 -> get_one("agent_id = '".$order_user['agent_id']."' AND aid = 1", 'uid,agentconfig', 'uid ASC');
+                                                                if ($agent_user_tmp) {
+                                                                        $agent_uid = $agent_user_tmp['uid'];
+                                                                        // 更新代理余额
+                                                                        $db3 -> update(array('money' => '+='.$rebate_money), array('uid' => $agent_uid));
+                                                                        // 记录代理流水
+                                                                        $agent_oldmoney = $db3 -> get_one(array('uid' => $agent_uid));
+                                                                        $db4 -> insert(array(
+                                                                                'uid' => $agent_uid,
+                                                                                'money' => $rebate_money,
+                                                                                'countmoney' => $agent_oldmoney['money'],
+                                                                                'type' => 0,
+                                                                                'addtime' => $time,
+                                                                                'comment' => '代理分成(UID:'.$order['uid'].' 下注 '.$order['money'].')'
+                                                                        ));
+                                                                }
+                                                                // 记录分成日志
+                                                                $rebate_log_db = base :: load_model('agent_rebate_log_model');
+                                                                $rebate_log_db -> insert(array(
+                                                                        'uid' => $order['uid'],
+                                                                        'agent_id' => $order_user['agent_id'],
+                                                                        'agent_uid' => $agent_uid,
+                                                                        'order_id' => $order['id'],
+                                                                        'order_money' => $order['money'],
+                                                                        'rebate' => $agent_info['rebate'],
+                                                                        'rebate_money' => $rebate_money,
+                                                                        'addtime' => $time
+                                                                ));
+                                                        }
+                                                }
+                                        }
+                                }
                         }
                 }
                 if ($account) {//将开奖数据标记为完成

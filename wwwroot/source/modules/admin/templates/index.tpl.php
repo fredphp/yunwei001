@@ -57,6 +57,8 @@
                         <li class="menuli" onclick="menu_show(this);"><a hidefocus="true" style="outline:none" href="<?php echo ADMIN_PATH?>&c=pay" target="right_iframe"><i class="icon-2"></i>充值管理</a></li>
                         <div class="line-x"></div>
                         <li class="menuli" onclick="menu_show(this);"><a hidefocus="true" style="outline:none" href="<?php echo ADMIN_PATH?>&c=cash" target="right_iframe"><i class="icon-2"></i>提现管理</a></li>
+                        <div class="line-x"></div>
+                        <li class="menuli" onclick="menu_show(this);"><a hidefocus="true" style="outline:none" href="<?php echo ADMIN_PATH?>&c=agent_rebate" target="right_iframe"><i class="icon-2"></i>代理分成</a></li>
                 </ul>
         </div>
         <div class="col-auto">

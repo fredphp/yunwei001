@@ -288,10 +288,70 @@ include $this->admin_tpl('header');
                         </tr>
                                 </tbody>
                         </table>
+                        <div class="mt20"></div>
+                        <h3 class="title-1" style="padding:10px 0;">代理管理</h3>
+                        <table width="100%" cellspacing="0" class="table_form" id="agent_table">
+                                <thead>
+                                        <tr>
+                                                <th width="60">ID</th>
+                                                <th>代理名称</th>
+                                                <th width="120">分成比例(%)</th>
+                                                <th width="80">状态</th>
+                                                <th width="80">操作</th>
+                                        </tr>
+                                </thead>
+                                <tbody id="agent_tbody">
+                                <?php if(isset($agent_list) && is_array($agent_list)) { foreach($agent_list as $ag) { ?>
+                                        <tr id="agent_<?php echo $ag['id']?>">
+                                                <td><?php echo $ag['id']?></td>
+                                                <td><input class="input-text" type="text" name="agent_list[<?php echo $ag['id']?>][name]" value="<?php echo htmlspecialchars($ag['name'])?>" style="width:200px;" /></td>
+                                                <td><input class="input-text" type="text" name="agent_list[<?php echo $ag['id']?>][rebate]" value="<?php echo $ag['rebate']?>" style="width:80px;" />%</td>
+                                                <td>
+                                                        <label><input type="radio" name="agent_list[<?php echo $ag['id']?>][state]" value="1" <?php if($ag['state'] == 1) echo 'checked="checked"'?> />启用</label>
+                                                        <label><input type="radio" name="agent_list[<?php echo $ag['id']?>][state]" value="0" <?php if($ag['state'] == 0) echo 'checked="checked"'?> />停用</label>
+                                                </td>
+                                                <td><a href="javascript:;" onclick="delete_agent_row(<?php echo $ag['id']?>);" style="color:#F00;">删除</a></td>
+                                        </tr>
+                                <?php }} ?>
+                                </tbody>
+                                <tfoot>
+                                        <tr>
+                                                <td colspan="5" style="padding:10px;">
+                                                        <input type="button" class="button" value=" + 添加代理 " onclick="add_agent_row();" />
+                                                        <span style="color:#999;margin-left:10px;">分成比例基于玩家下注流水计算，如填写5表示玩家每下注100元，代理获得5元分成</span>
+                                                </td>
+                                        </tr>
+                                </tfoot>
+                        </table>
+                        <input type="hidden" name="agent_deleted" id="agent_deleted" value="" />
                 </div>
                 <p class="mt20"></p>
                 <input type="submit" class="button" name="dosubmit" value=" 提 交 " />
         </form>
 </div>
+<script type="text/javascript">
+var agent_row_count = <?php echo isset($agent_list) && is_array($agent_list) ? count($agent_list) : 0?>;
+function add_agent_row() {
+        agent_row_count--;
+        var html = '<tr id="agent_new_' + agent_row_count + '">'
+                + '<td>新增</td>'
+                + '<td><input class="input-text" type="text" name="agent_new[' + agent_row_count + '][name]" value="" style="width:200px;" placeholder="代理名称" /></td>'
+                + '<td><input class="input-text" type="text" name="agent_new[' + agent_row_count + '][rebate]" value="0" style="width:80px;" />%</td>'
+                + '<td>'
+                + '<label><input type="radio" name="agent_new[' + agent_row_count + '][state]" value="1" checked="checked" />启用</label>'
+                + '<label><input type="radio" name="agent_new[' + agent_row_count + '][state]" value="0" />停用</label>'
+                + '</td>'
+                + '<td><a href="javascript:;" onclick="$(this).closest(\'tr\').detach();" style="color:#F00;">删除</a></td>'
+                + '</tr>';
+        $('#agent_tbody').append(html);
+}
+function delete_agent_row(id) {
+        if (confirm('确定删除该代理吗？删除后已关联该代理的用户将变为普通账户！')) {
+                $('#' + 'agent_' + id).detach();
+                var deleted = $('#agent_deleted').val();
+                $('#agent_deleted').val(deleted ? deleted + ',' + id : id);
+        }
+}
+</script>
 </body>
 </html>

@@ -65,6 +65,8 @@ class settings extends admin {
                                         write_config($system_config, 'system.php');
                                 }
                         }
+                        // ★ 保存代理管理数据
+                        $this -> save_agents();
                         // 写入本地文件
                         $iscache = base :: load_config('system', 'iscache'); //是否开启设置缓存
                         if ($iscache) write_config($setting, 'setting.php');
@@ -93,8 +95,81 @@ class settings extends admin {
                                 $translate[$row['source_id'] . '_' . $row['lang']] = $row['value'];
                         }
                 }
+                // ★ 读取代理列表
+                $agent_list = $this -> get_agent_list();
                 include $this -> admin_tpl('settings');
         }
-}
 
+        // ★ 获取代理列表
+        private function get_agent_list() {
+                $agent_db = base :: load_model('agent_model');
+                $list = $agent_db -> select('', '*', '', 'id ASC');
+                return $list ? $list : array();
+        }
+
+        // ★ 保存代理管理数据
+        private function save_agents() {
+                $agent_db = base :: load_model('agent_model');
+                $user_db = base :: load_model('user_model');
+
+                // 1. 处理已删除的代理
+                $deleted = isset($_POST['agent_deleted']) ? trim($_POST['agent_deleted']) : '';
+                if ($deleted) {
+                        $del_ids = array_map('intval', explode(',', $deleted));
+                        foreach ($del_ids as $did) {
+                                if ($did > 0) {
+                                        // 将关联该代理的用户重置为普通账户
+                                        $user_db -> update(array('aid' => 0, 'agent_id' => 0, 'agent' => 0, 'agents' => 0), array('agent_id' => $did));
+                                        $agent_db -> delete(array('id' => $did));
+                                }
+                        }
+                }
+
+                // 2. 更新已有代理
+                if (isset($_POST['agent_list']) && is_array($_POST['agent_list'])) {
+                        foreach ($_POST['agent_list'] as $id => $data) {
+                                $id = intval($id);
+                                if ($id > 0) {
+                                        $update = array(
+                                                'name' => safe_replace(trim($data['name'])),
+                                                'rebate' => round(floatval($data['rebate']), 2),
+                                                'state' => intval($data['state']) ? 1 : 0
+                                        );
+                                        $agent_db -> update($update, array('id' => $id));
+                                        // 如果停用代理，将关联用户的aid设为0
+                                        if ($update['state'] == 0) {
+                                                $user_db -> update(array('aid' => 0), array('agent_id' => $id));
+                                        } elseif ($update['state'] == 1) {
+                                                // 如果启用代理，将关联用户的aid设为1
+                                                $user_db -> update(array('aid' => 1), array('agent_id' => $id));
+                                        }
+                                }
+                        }
+                }
+
+                // 3. 新增代理
+                if (isset($_POST['agent_new']) && is_array($_POST['agent_new'])) {
+                        foreach ($_POST['agent_new'] as $data) {
+                                $name = safe_replace(trim($data['name']));
+                                if (empty($name)) continue; // 跳过空名称
+                                $insert = array(
+                                        'name' => $name,
+                                        'rebate' => round(floatval($data['rebate']), 2),
+                                        'state' => intval($data['state']) ? 1 : 0,
+                                        'addtime' => SYS_TIME
+                                );
+                                $agent_db -> insert($insert);
+                        }
+                }
+        }
+
+        // ★ AJAX获取代理列表（供其他页面使用）
+        public function ajax_get_agents() {
+                $agent_db = base :: load_model('agent_model');
+                $list = $agent_db -> select("state = 1", 'id,name,rebate', '', 'id ASC');
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode($list ? $list : array());
+                exit();
+        }
+}
 ?>

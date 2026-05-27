@@ -30,9 +30,7 @@ include $this->admin_tpl('header');
 								<select name="search[aid]">
 									<option value="0" <?php echo $aidoption[0]?>>全部账户</option>
 									<option value="4" <?php echo $aidoption[4]?>>普通账户</option>
-									<option value="1" <?php echo $aidoption[1]?>>一级代理</option>
-									<option value="2" <?php echo $aidoption[2]?>>二级代理</option>
-									<option value="3" <?php echo $aidoption[3]?>>二级代理(阅)</option>
+									<option value="1" <?php echo $aidoption[1]?>>代理</option>
 								</select>
 								<input type="submit" value="搜索" class="button" name="dosubmit">
 							</div>
@@ -53,7 +51,7 @@ include $this->admin_tpl('header');
 					<th align="left" width="100">姓名/手机号</th>
 					<th align="left" width="70">金额</th>
 					<th align="center" width="30">锁定</th>
-					<th align="center" width="50">代理</th>
+					<th align="center" width="80">代理</th>
 					<th align="left" width="140">上级代理人(UID)</th>
 					<th align="left" width="120">登录IP</th>
 					<th align="left" width="140">登录/注册时间</th>
@@ -61,7 +59,15 @@ include $this->admin_tpl('header');
 				</tr>
 			</thead>
 			<tbody>
-			<?php foreach ($infos as $v){?>
+			<?php foreach ($infos as $v){
+				// ★ 获取代理名称
+				$agent_name = '--';
+				if ($v['aid'] == 1 && $v['agent_id'] > 0) {
+					$agent_db_tmp = base :: load_model('agent_model');
+					$agent_tmp = $agent_db_tmp -> get_one(array('id' => $v['agent_id']));
+					if ($agent_tmp) $agent_name = '<span style="color: #F00;">' . $agent_tmp['name'] . '</span>';
+				}
+			?>
 				<tr id="list_<?php echo $v['uid']?>">
 					<td align="center"><?php echo $v['uid']?></td>
 					<td align="left"><?php echo $v['username']?></td>
@@ -69,7 +75,7 @@ include $this->admin_tpl('header');
 					<td align="left"><p><?php echo $v['name']?></p><p><?php echo $v['mobile']?></p></td>
 					<td align="left"><?php echo $v['money']?></td>
 					<td align="center"><?php echo $this -> lock[$v['lock']]?></td>
-					<td align="center"><?php echo $this -> daili[$v['aid']]?></td>
+					<td align="center"><?php echo $agent_name?></td>
 					<td align="left"><?php echo $this -> go_user($v['agent'])?></td>
 					<td align="left"><?php echo $v['loginip']?></td>
 					<td align="left"><p><?php echo format::date($v['logintime'], 1)?></p><p><?php echo format::date($v['regtime'], 1)?></p></td>
