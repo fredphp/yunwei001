@@ -132,7 +132,7 @@ class settings extends admin {
                                 if ($id > 0) {
                                         $update = array(
                                                 'name' => safe_replace(trim($data['name'])),
-                                                'rebate' => round(floatval($data['rebate']), 2),
+                                                'rebate' => min(round(floatval($data['rebate']), 2), 30),
                                                 'state' => intval($data['state']) ? 1 : 0
                                         );
                                         $agent_db -> update($update, array('id' => $id));
@@ -154,7 +154,7 @@ class settings extends admin {
                                 if (empty($name)) continue; // 跳过空名称
                                 $insert = array(
                                         'name' => $name,
-                                        'rebate' => round(floatval($data['rebate']), 2),
+                                        'rebate' => min(round(floatval($data['rebate']), 2), 30),
                                         'state' => intval($data['state']) ? 1 : 0,
                                         'addtime' => SYS_TIME
                                 );

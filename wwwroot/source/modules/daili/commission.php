@@ -45,9 +45,17 @@ class commission extends daili {
 		$order_db = base :: load_model('order_model');
 		$today_flow = $order_db -> select("agent = '$this->uid' AND tui = 0 AND addtime >= '$starttime'", 'SUM(money) as total');
 		$today_flow_total = $today_flow[0]['total'] ? $today_flow[0]['total'] : 0;
+		// 昨日流水
+		$yesterday_flow = $order_db -> select("agent = '$this->uid' AND tui = 0 AND addtime >= '$starttime_y' AND addtime < '$endtime_y'", 'SUM(money) as total');
+		$yesterday_flow_total = $yesterday_flow[0]['total'] ? $yesterday_flow[0]['total'] : 0;
 		// 本月流水
 		$month_flow = $order_db -> select("agent = '$this->uid' AND tui = 0 AND addtime >= '$starttime_m'", 'SUM(money) as total');
 		$month_flow_total = $month_flow[0]['total'] ? $month_flow[0]['total'] : 0;
+		// 上月流水
+		$starttime_lm = mktime(0, 0, 0, date('m')-1, 1, date('Y'));
+		$endtime_lm = mktime(23, 59, 59, date('m'), 0, date('Y'));
+		$lastmonth_flow = $order_db -> select("agent = '$this->uid' AND tui = 0 AND addtime >= '$starttime_lm' AND addtime < '$endtime_lm'", 'SUM(money) as total');
+		$lastmonth_flow_total = $lastmonth_flow[0]['total'] ? $lastmonth_flow[0]['total'] : 0;
 
 		include $this -> daili_tpl('commission');
 	}

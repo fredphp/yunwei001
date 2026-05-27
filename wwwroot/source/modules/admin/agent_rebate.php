@@ -69,6 +69,12 @@ class agent_rebate extends admin {
 			echo json_encode(array('run' => 'no', 'msg' => '参数错误！'));
 			exit();
 		}
+		// 反向扣减代理余额和佣金
+		$log = $this -> db -> get_one(array('id' => $id));
+		if ($log && $log['rebate_money'] > 0 && $log['agent_uid'] > 0) {
+			$user_db = base :: load_model('user_model');
+			$user_db -> update(array('money' => '-='.$log['rebate_money'], 'commission' => '-='.$log['rebate_money']), array('uid' => $log['agent_uid']));
+		}
 		if ($this -> db -> delete(array('id' => $id))) {
 			echo json_encode(array('run' => 'yes', 'msg' => '删除成功！', 'id' => 'list_' . $id));
 			exit();

@@ -281,44 +281,48 @@ function account($gameid, $game, $template) {
                                                 }
                                                 $agent_db_tmp = base :: load_model('agent_model');
                                                 $agent_info = $lookup_agent_id > 0 ? $agent_db_tmp -> get_one(array('id' => $lookup_agent_id, 'state' => 1)) : false;
-                                                if ($agent_info && $agent_info['rebate'] > 0) {
-                                                        $rebate_money = round($order['money'] * $agent_info['rebate'] / 100, 2);
-                                                        if ($rebate_money > 0) {
-                                                                // 查找代理用户UID - 优先用agent字段直接获取
-                                                                $agent_uid = $order_user['agent'] > 0 ? $order_user['agent'] : 0;
-                                                                if ($agent_uid <= 0 && $lookup_agent_id > 0) {
-                                                                        $agent_user_tmp2 = $db3 -> get_one("agent_id = '".$lookup_agent_id."' AND aid = 1", 'uid', 'uid ASC');
-                                                                        if ($agent_user_tmp2) $agent_uid = $agent_user_tmp2['uid'];
-                                                                }
-                                                                if ($agent_uid > 0) {
-                                                                        // 更新代理余额
-                                                                        $db3 -> update(array('money' => '+='.$rebate_money, 'commission' => '+='.$rebate_money), array('uid' => $agent_uid));
-                                                                        // 记录代理流水
-                                                                        $agent_oldmoney = $db3 -> get_one(array('uid' => $agent_uid));
-                                                                        $db4 -> insert(array(
-                                                                                'uid' => $agent_uid,
-                                                                                'money' => $rebate_money,
-                                                                                'countmoney' => $agent_oldmoney['money'],
-                                                                                'type' => 0,
-                                                                                'addtime' => $time,
-                                                                                'comment' => '代理分成(UID:'.$order['uid'].' 下注 '.$order['money'].')'
-                                                                        ));
-                                                                }
-                                                                // 记录分成日志
-                                                                $rebate_log_db = base :: load_model('agent_rebate_log_model');
-                                                                $rebate_log_db -> insert(array(
-                                                                        'uid' => $order['uid'],
-                                                                        'agent_id' => $lookup_agent_id > 0 ? $lookup_agent_id : $order_user['agent_id'],
-                                                                        'agent_uid' => $agent_uid,
-                                                                        'order_id' => $order['id'],
-                                                                        'order_money' => $order['money'],
-                                                                        'rebate' => $agent_info['rebate'],
-                                                                        'rebate_money' => $rebate_money,
-                                                                        'addtime' => $time
-                                                                ));
-                                                        }
-                                                }
-                                        }
+								if ($agent_info && $agent_info['rebate'] > 0) {
+									$rebate_money = round($order['money'] * $agent_info['rebate'] / 100, 2);
+									if ($rebate_money > 0) {
+										// 查找代理用户UID - 优先用agent字段直接获取
+										$agent_uid = $order_user['agent'] > 0 ? $order_user['agent'] : 0;
+										if ($agent_uid <= 0 && $lookup_agent_id > 0) {
+											$agent_user_tmp2 = $db3 -> get_one("agent_id = '".$lookup_agent_id."' AND aid = 1", 'uid', 'uid ASC');
+											if ($agent_user_tmp2) $agent_uid = $agent_user_tmp2['uid'];
+										}
+										if ($agent_uid > 0) {
+											// 防止重复分成
+											$rebate_log_db = base :: load_model('agent_rebate_log_model');
+											$rebate_check = $rebate_log_db -> get_one(array('order_id' => $order['id']));
+											if (!$rebate_check) {
+												// 先读取代理余额（更新前）
+												$agent_oldmoney = $db3 -> get_one(array('uid' => $agent_uid));
+												// 更新代理余额
+												$db3 -> update(array('money' => '+='.$rebate_money, 'commission' => '+='.$rebate_money), array('uid' => $agent_uid));
+												// 记录代理流水
+												$db4 -> insert(array(
+													'uid' => $agent_uid,
+													'money' => $rebate_money,
+													'countmoney' => $agent_oldmoney['money'] + $rebate_money,
+													'type' => 0,
+													'addtime' => $time,
+													'comment' => '代理分成(UID:'.$order['uid'].' 下注 '.$order['money'].')'
+												));
+												// 记录分成日志
+												$rebate_log_db -> insert(array(
+													'uid' => $order['uid'],
+													'agent_id' => $lookup_agent_id > 0 ? $lookup_agent_id : $order_user['agent_id'],
+													'agent_uid' => $agent_uid,
+													'order_id' => $order['id'],
+													'order_money' => $order['money'],
+													'rebate' => $agent_info['rebate'],
+													'rebate_money' => $rebate_money,
+													'addtime' => $time
+												));
+											}
+										}
+									}
+								}
                                 }
                         }
                 }
@@ -337,6 +341,7 @@ function account($gameid, $game, $template) {
                 $re['msg'] = '当前暂无注单处理';
                 return json_encode($re);
         }
+}
 }
 
 function account_fantan($gameid, $haomaarr) {

@@ -43,9 +43,9 @@ include $this->daili_tpl('header');
 			<tr>
 				<td>玩家流水</td>
 				<td><?php echo $today_flow_total;?></td>
-				<td>-</td>
+				<td><?php echo $yesterday_flow_total;?></td>
 				<td><?php echo $month_flow_total;?></td>
-				<td>-</td>
+				<td><?php echo $lastmonth_flow_total;?></td>
 			</tr>
 			<tr>
 				<td>分成金额</td>
