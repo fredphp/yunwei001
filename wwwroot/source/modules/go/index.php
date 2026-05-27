@@ -838,6 +838,11 @@ class index extends go {
                 if (isset($this -> setting['kefu_url']) && $this -> setting['kefu_url']) {
                         // 使用后台配置的客服地址（如 https://kf.hjdsaf.com/）
                         $kefu_url = $this -> setting['kefu_url'];
+                        // ★ 自动追加当前语言参数到客服链接（如 &lang=my-mm）
+                        $current_lang = defined('ROUTE_LANG') ? ROUTE_LANG : 'zh-cn';
+                        if ($current_lang && $current_lang != 'zh-cn') {
+                                $kefu_url .= (strpos($kefu_url, '?') !== false ? '&' : '?') . 'lang=' . urlencode($current_lang);
+                        }
                         $kefu_available = true;
                 } elseif (isset($this -> setting['pop800']) && $this -> setting['pop800']) {
                         $kefu_url = 'http://api.pop800.com/chat/' . $this -> setting['pop800'];
