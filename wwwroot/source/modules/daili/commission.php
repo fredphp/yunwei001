@@ -15,6 +15,7 @@ class commission extends daili {
 		$this -> username = trim($this -> get_username());
 	}
 
+	// ★ 统一入口：汇总信息 + 默认显示所有分成明细 + 搜索 + 分页
 	public function init() {
 		// 获取当前代理信息
 		$agent_info = $this -> db2 -> get_one(array('uid' => $this -> uid));
@@ -52,16 +53,10 @@ class commission extends daili {
 		$month_flow = $order_db -> select("agent = '$this->uid' AND tui = 0 AND addtime >= '$starttime_m'", 'SUM(money) as total');
 		$month_flow_total = $month_flow[0]['total'] ? $month_flow[0]['total'] : 0;
 		// 上月流水
-		$starttime_lm = mktime(0, 0, 0, date('m')-1, 1, date('Y'));
-		$endtime_lm = mktime(23, 59, 59, date('m'), 0, date('Y'));
 		$lastmonth_flow = $order_db -> select("agent = '$this->uid' AND tui = 0 AND addtime >= '$starttime_lm' AND addtime < '$endtime_lm'", 'SUM(money) as total');
 		$lastmonth_flow_total = $lastmonth_flow[0]['total'] ? $lastmonth_flow[0]['total'] : 0;
 
-		include $this -> daili_tpl('commission');
-	}
-
-	// ★ 统一明细入口：默认显示所有分成记录，支持搜索筛选和分页
-	public function search() {
+		// ★ 分成明细列表（默认显示所有，支持搜索筛选+分页）
 		$where = "agent_uid = '$this->uid'";
 		$search_uid = isset($_GET['search']['uid']) ? intval($_GET['search']['uid']) : '';
 		$start_time = isset($_GET['search']['start_time']) ? trim($_GET['search']['start_time']) : '';
@@ -81,9 +76,8 @@ class commission extends daili {
 		$page = isset($_GET['page']) && intval($_GET['page']) ? intval($_GET['page']) : 1;
 		$list = $this -> db -> listinfo($where, 'id DESC', $page, 20);
 		$pages = $this -> db -> pages;
-		$total = $this -> db -> number;
 
-		// 统计
+		// 本页统计
 		$total_order = 0;
 		$total_rebate = 0;
 		if ($list && is_array($list)) {
@@ -112,8 +106,28 @@ class commission extends daili {
 		}
 
 		base :: load_sys_class('format', '', 0);
-		include $this -> daili_tpl('commission_list');
+		include $this -> daili_tpl('commission');
 	}
 
+	// ★ 保留search方法兼容旧链接，重定向到init
+	public function search() {
+		$params = array();
+		$params['m'] = 'daili';
+		$params['c'] = 'commission';
+		$params['a'] = 'init';
+		if (isset($_GET['search'])) {
+			foreach ($_GET['search'] as $k => $v) {
+				if (trim($v) !== '') {
+					$params['search[' . $k . ']'] = trim($v);
+				}
+			}
+		}
+		$url = DAILI_PATH . '&c=commission&a=init';
+		if (!empty($params)) {
+			$url .= '&' . http_build_query($params);
+		}
+		header('Location: ' . $url);
+		exit;
+	}
 }
 ?>
