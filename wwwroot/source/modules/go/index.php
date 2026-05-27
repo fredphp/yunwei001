@@ -836,21 +836,20 @@ class index extends go {
                 $kefu_url = '';
                 $kefu_available = false;
                 if (isset($this -> setting['kefu_url']) && $this -> setting['kefu_url']) {
+                        // 使用后台配置的客服地址（如 https://kf.hjdsaf.com/）
                         $kefu_url = $this -> setting['kefu_url'];
+                        $kefu_available = true;
                 } elseif (isset($this -> setting['pop800']) && $this -> setting['pop800']) {
                         $kefu_url = 'http://api.pop800.com/chat/' . $this -> setting['pop800'];
-                } else {
-                        // 默认pop800客服账号（原始硬编码值）
-                        $kefu_url = 'http://api.pop800.com/chat/465109';
-                }
-                // 后端验证客服URL是否可用（检测pop800返回的404页面）
-                if ($kefu_url) {
+                        // 仅对pop800链接做可用性验证
                         $ctx = stream_context_create(array('http' => array('timeout' => 5, 'ignore_errors' => true)));
                         $response = @file_get_contents($kefu_url, false, $ctx);
-                        // pop800 返回200但内容包含"404 Page"表示账号无效
                         if ($response !== false && strpos($response, '404 Page') === false && strpos($response, '页面不存在') === false) {
                                 $kefu_available = true;
                         }
+                } else {
+                        // 默认pop800客服账号（原始硬编码值）
+                        $kefu_url = 'http://api.pop800.com/chat/465109';
                 }
                 include template('kefu');
         }

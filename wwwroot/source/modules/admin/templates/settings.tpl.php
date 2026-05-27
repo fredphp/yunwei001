@@ -131,6 +131,13 @@ include $this->admin_tpl('header');
                                     </td>
                                   </tr>
                                         <tr>
+                                                <th>客服地址：</th>
+                                                <td>
+                                                        <input class="input-text" type="text" name="setting[kefu_url]" style="width: 500px;" value="<?php echo isset($kefu_url) ? $kefu_url : '';?>">
+                                                        <span>填写客服系统完整URL地址，如：https://kf.example.com/ 。留空则使用默认pop800客服</span>
+                                                </td>
+                                        </tr>
+                                        <tr>
                                                 <th>网站语言：</th>
                                                 <td>
                                                         <select name="setting[lang]" class="input-text">

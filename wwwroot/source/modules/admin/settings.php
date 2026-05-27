@@ -39,6 +39,15 @@ class settings extends admin {
                                 $setting[$k] = safe_replace(trim($v));
                                 $this -> db -> insert(array('name' => $k , 'data' => safe_replace(trim($v))), 1, 1); //更新数据
                         }
+                        // ★ 合并数据库中所有设置项到缓存（防止表单未包含的设置被丢弃）
+                        $all_settings = $this -> get_settings();
+                        if (is_array($all_settings)) {
+                                foreach ($all_settings as $k => $v) {
+                                        if (!isset($setting[$k])) {
+                                                $setting[$k] = $v;
+                                        }
+                                }
+                        }
                         // ★ 保存多语言翻译
                         $translatable_fields = array('webname', 'ann', 'copyright', 'description', 'keywords', 'card', 'remark');
                         foreach ($translatable_fields as $field) {
